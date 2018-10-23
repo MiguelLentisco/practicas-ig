@@ -42,4 +42,55 @@ class MallaRevol : public MallaInd
 
 } ;
 
+
+// *****************************************************************************
+
+class Cilindro : public MallaRevol {
+  protected:
+    float a; // altura
+    float r; // radio
+
+  public:
+    // El cilindro se crea con el centro en el origen
+    Cilindro( float r,
+              float a,
+              const unsigned nvp,
+              const unsigned nperfiles,
+              const bool     crear_tapas,
+              const bool     cerrar_malla );
+};
+
+// *****************************************************************************
+
+class Esfera : public MallaRevol {
+  protected:
+    float r; // radio
+
+
+  public:
+    // La esfera se crea con centro el origen
+    Esfera( float r,
+            const unsigned nvp,
+            const unsigned nperfiles,
+            const bool     crear_tapas,
+            const bool     cerrar_malla );
+};
+
+// ***************************************************************************
+
+class Cono : public MallaRevol {
+  protected:
+    float r; // radio
+    float a; // altura
+
+  public:
+    // El cono se crea con el centro de la base en el origen
+    Cono( float r,
+          float a,
+          const unsigned nvp,
+          const unsigned nperfiles,
+          const bool     crear_tapas,
+          const bool     cerrar_malla);
+};
+
 #endif

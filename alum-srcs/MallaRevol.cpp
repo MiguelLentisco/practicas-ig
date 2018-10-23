@@ -9,6 +9,7 @@
 #include <tuplasg.hpp>
 #include <file_ply_stl.hpp>
 #include <matrices-tr.hpp>
+#include <math.h>
 #include "MallaRevol.hpp"
 
 using namespace std ;
@@ -44,6 +45,7 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
                                   const bool     crear_tapas,
                                   const bool     cerrar_malla)
 {
+  sinVBO = true;
   nper = nperfiles;
   nvp = perfil_original.size();
   n_vertices = nvp * nper;
@@ -78,8 +80,6 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
       n_triangulos += 2;
     }
 
-
-
    // Creamos las tapas
    if (crear_tapas) {
 
@@ -89,7 +89,7 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
        tablaVertices.push_back(Tupla3f(0.0, tapa_arriba(Y), 0.0));
        ++n_vertices;
 
-       for (int i = 0; i < nper - 2 + int(cerrar_malla); ++i) {
+       for (int i = 0; i < nper - 1 + int(cerrar_malla); ++i) {
          tablaTriangulos.push_back(Tupla3i(nvp * (i + 1) - 1,
             nvp * (((i + 1) % nper) + 1) - 1, n_vertices - 1));
          ++n_triangulos;
@@ -102,13 +102,79 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
        tablaVertices.push_back(Tupla3f(0.0, tapa_abajo(Y), 0.0));
        n_vertices++;
 
-       for (int i = 0; i < nper - 2 + int(cerrar_malla); ++i) {
+       for (int i = 0; i < nper - 1 + int(cerrar_malla); ++i) {
          tablaTriangulos.push_back(Tupla3i(nvp * i,
             nvp * ((i + 1) % nper), n_vertices - 1));
          ++n_triangulos;
        }
      }
-
    }
-
   }
+
+// *****************************************************************************
+
+Cilindro::Cilindro( float r,
+                    float a,
+                    const unsigned nvp,
+                    const unsigned nperfiles,
+                    const bool     crear_tapas,
+                    const bool     cerrar_malla )
+{
+  this->r = r;
+  this->a = a;
+
+  vector<Tupla3f> perfil_original;
+
+  // Dividimos la recta desde el origen hasta a (altura) con nvp puntos.
+  for (int i = 0; i < nvp; ++i)
+    perfil_original.push_back(Tupla3f(r, a * i / (nvp - 1), 0.0));
+
+  crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+}
+
+// *****************************************************************************
+
+
+Esfera::Esfera( float r,
+                const unsigned nvp,
+                const unsigned nperfiles,
+                const bool     crear_tapas,
+                const bool     cerrar_malla )
+{
+  this->r = r;
+
+  vector<Tupla3f> perfil_original;
+
+  // Dividimos la recta entre -r y r (eje y) con nvp puntos y con ese valor y,
+  // sacamos el valor x despejandolo de la fórmula de la circunferencia
+  for (int i = 0; i < nvp; ++i) {
+    float y = r * (-1 + 2.0 * i / (nvp - 1));
+    perfil_original.push_back(Tupla3f(sqrt(r * r - y * y), y, 0.0));
+  }
+
+  crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+}
+
+// *****************************************************************************
+
+Cono::Cono( float r,
+            float a,
+            const unsigned nvp,
+            const unsigned nperfiles,
+            const bool     crear_tapas,
+            const bool     cerrar_malla )
+{
+  this->r = r;
+  this->a = a;
+
+  vector<Tupla3f> perfil_original;
+
+  // Dividimos la recta entre 0 y r (eje x) con nvp puntos y con los valores
+  // de x sacamos los de y proyectando sobre la recta de (0, a, 0) a (r, 0, 0)
+  for (int i = 0; i < nvp; ++i) {
+    float x = r * (1 - 1.0 * i / (nvp - 1));
+    perfil_original.push_back(Tupla3f(x, a * (- x / r + 1.0), 0));
+  }
+
+  crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+}
