@@ -20,16 +20,31 @@ static constexpr int numObjetos2 = 2 ;
 
 static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr };
 
+static MallaPLY * mallaply = NULL;
+static MallaRevol * mallarevol = NULL;
+
 // ---------------------------------------------------------------------
 // Función para implementar en la práctica 1 para inicialización.
 // Se llama una vez al inicio, cuando ya se ha creado la ventana e
 // incializado OpenGL.
 
-void P2_Inicializar(  )
+void P2_Inicializar(int argc, char * argv[])
 {
    cout << "Creando objetos de la práctica 2 .... " << flush ;
    // COMPLETAR: práctica 2: inicializar objeto de revolución y objeto PLY (en 'objeto2')
-   // ...
+
+   if (argc == 3) {
+     mallaply = new MallaPLY(argv[1]);
+     mallarevol = new MallaRevol(argv[2]);
+   } else (argc == 2)
+    mallaply = new MallaPLY(argv[1]);
+   else {
+    mallaply = new MallaPLY("../plys/ant.ply");
+    mallarevol = new MallaRevol("../plys/peon.ply");
+   }
+
+   objetos2[0] = mallaply;
+   objetos2[1] = mallarevol;
 
    cout << "hecho." << endl << flush ;
 }
@@ -66,6 +81,6 @@ bool P2_FGE_PulsarTeclaCaracter( unsigned char tecla )
 void P2_DibujarObjetos( ContextoVis & cv )
 {
    // COMPLETAR: práctica 2: invocar a 'visualizarGL' para el objeto activo actual en 'objetos2'
-   // ...
+   objetos2[objetoActivo2]->visualizarGL();
 
 }
