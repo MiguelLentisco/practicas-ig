@@ -16,6 +16,9 @@ static unsigned      objetoActivo       = 0 ; // objeto activo: cubo (0), tetrae
 static constexpr int numObjetos         = 2 ; // numero de objetos creados para esta práctica
 static Objeto3D *    objeto[numObjetos] = { nullptr, nullptr }; // punteros a los objetos
 
+static Cubo * cubo = NULL;
+static Tetraedro * tetraedro = NULL;
+
 using namespace std ;
 
 // ---------------------------------------------------------------------
@@ -28,8 +31,8 @@ void P1_Inicializar(  )
    cout << "Creando objetos de la práctica 1 .... " << flush ;
    // COMPLETAR: práctica 1: asignar valores a 'objeto[0]' y 'objeto[1]'
    // (punteros a mallas)
-   objeto[0] = new Cubo();
-   objeto[1] = new Tetraedro();
+   objeto[0] = cubo = new Cubo();
+   objeto[1] = tetraedro = new Tetraedro();
 
 
    cout << "hecho." << endl << flush ;
