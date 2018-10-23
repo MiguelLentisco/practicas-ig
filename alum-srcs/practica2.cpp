@@ -20,8 +20,8 @@ static constexpr int numObjetos2 = 2 ;
 
 static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr };
 
-static MallaPLY * mallaply = NULL;
-static MallaRevol * mallarevol = NULL;
+static MallaPLY * mp = NULL;
+static MallaRevol * mr = NULL;
 
 // ---------------------------------------------------------------------
 // Función para implementar en la práctica 1 para inicialización.
@@ -34,17 +34,17 @@ void P2_Inicializar(int argc, char * argv[])
    // COMPLETAR: práctica 2: inicializar objeto de revolución y objeto PLY (en 'objeto2')
 
    if (argc == 3) {
-     mallaply = new MallaPLY(argv[1]);
-     mallarevol = new MallaRevol(argv[2]);
-   } else (argc == 2)
-    mallaply = new MallaPLY(argv[1]);
+     mp = new MallaPLY(argv[1]);
+     //mr = new MallaRevol(argv[2]);
+   } else if (argc == 2)
+    mp = new MallaPLY(argv[1]);
    else {
-    mallaply = new MallaPLY("../plys/ant.ply");
-    mallarevol = new MallaRevol("../plys/peon.ply");
+    mp = new MallaPLY("../plys/ant.ply");
+    mr = new MallaRevol("../plys/peon.ply", 110, true, true);
    }
 
-   objetos2[0] = mallaply;
-   objetos2[1] = mallarevol;
+   objetos2[0] = mp;
+   objetos2[1] = mr;
 
    cout << "hecho." << endl << flush ;
 }
@@ -81,6 +81,6 @@ bool P2_FGE_PulsarTeclaCaracter( unsigned char tecla )
 void P2_DibujarObjetos( ContextoVis & cv )
 {
    // COMPLETAR: práctica 2: invocar a 'visualizarGL' para el objeto activo actual en 'objetos2'
-   objetos2[objetoActivo2]->visualizarGL();
+   objetos2[objetoActivo2]->visualizarGL(cv);
 
 }

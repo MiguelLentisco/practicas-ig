@@ -668,7 +668,7 @@ void Inicializar( int argc, char *argv[] )
    P1_Inicializar(  ) ;
 
    // inicializar práctica 2.
-   P2_Inicializar( argc, argv ) ;
+   P2_Inicializar( argc, argv) ;
 
    // inicializar la práctica 3
    P3_Inicializar(  );

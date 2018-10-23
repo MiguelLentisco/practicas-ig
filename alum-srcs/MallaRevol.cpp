@@ -22,14 +22,93 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
                         const bool     cerrar_malla  )
 {
    ponerNombre( std::string("malla por revolución del perfil en '"+ nombre_arch + "'" ));
-   // COMPLETAR: práctica 2: crear la malla de revolución
-   // ...........................
-   // ...........................
+
+
+   vector<float> vertices;
+   ply::read_vertices(nombre_arch.c_str(), vertices);
+
+   vector<Tupla3f> perfil_original;
+   for (int i = 0; i < vertices.size(); i += 3)
+    perfil_original.push_back(Tupla3f(vertices[i], vertices[i + 1], vertices[i + 2]));
+
+   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
 
    // calcular la tabla de normales
    calcular_normales();
-
-
 }
 
 // *****************************************************************************
+
+void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
+                                  const unsigned nperfiles,
+                                  const bool     crear_tapas,
+                                  const bool     cerrar_malla)
+{
+  nper = nperfiles;
+  nvp = perfil_original.size();
+  n_vertices = nvp * nper;
+
+  // Ángulo de rotación
+  float alfa = cerrar_malla ? (360.0 / nper) : (360.0 / (nper - 1));
+  // Matriz rotación de ángulo alfa y sobre el eje y
+  Matriz4f mRot = MAT_Rotacion(alfa, 0, 1, 0);
+  // Añadimos primero el perfil
+  for (int i = 0; i < perfil_original.size(); i++)
+    tablaVertices.push_back(perfil_original[i]);
+
+  vector<Tupla3f> caraActual = perfil_original;
+  // Creamos la tabla de vértices completa
+  for (int i = 0; i < nper - 1; ++i)
+    // Rotamos los vértices de la cara actual con ángulo alfa
+    for (int j = 0; j < caraActual.size(); ++j) {
+      caraActual[j] = mRot * caraActual[j];
+      tablaVertices.push_back(caraActual[j]);
+    }
+
+  n_triangulos = 0;
+  // Creamos la tabla de caras
+  for (int i = 0; i < nper - 1 + (int)cerrar_malla; ++i)
+    for (int j = 0; j < nvp - 1; ++j) {
+      int k1 = i * nvp + j;
+      int k2 = i * nvp + j + 1;
+      int k3 = ((i + 1) % nper) * nvp + j;
+      int k4 = ((i + 1) % nper) * nvp + j + 1;
+      tablaTriangulos.push_back(Tupla3i(k3, k4, k2));
+      tablaTriangulos.push_back(Tupla3i(k3, k2, k1));
+      n_triangulos += 2;
+    }
+
+
+
+   // Creamos las tapas
+   if (crear_tapas) {
+
+     Tupla3f tapa_arriba = perfil_original[nvp - 1];
+     // Si el punto no está en el eje de rotación
+     if (tapa_arriba(X) != 0) {
+       tablaVertices.push_back(Tupla3f(0.0, tapa_arriba(Y), 0.0));
+       ++n_vertices;
+
+       for (int i = 0; i < nper - 2 + int(cerrar_malla); ++i) {
+         tablaTriangulos.push_back(Tupla3i(nvp * (i + 1) - 1,
+            nvp * (((i + 1) % nper) + 1) - 1, n_vertices - 1));
+         ++n_triangulos;
+        }
+     }
+
+     Tupla3f tapa_abajo = perfil_original[0];
+     // Si el punto no está en el eje de rotación
+     if (tapa_abajo(X) != 0) {
+       tablaVertices.push_back(Tupla3f(0.0, tapa_abajo(Y), 0.0));
+       n_vertices++;
+
+       for (int i = 0; i < nper - 2 + int(cerrar_malla); ++i) {
+         tablaTriangulos.push_back(Tupla3i(nvp * i,
+            nvp * ((i + 1) % nper), n_vertices - 1));
+         ++n_triangulos;
+       }
+     }
+
+   }
+
+  }

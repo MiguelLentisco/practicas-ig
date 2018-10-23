@@ -17,11 +17,20 @@
 
 class MallaRevol : public MallaInd
 {
-   private:
+  protected:
+    MallaRevol() {}
 
-   unsigned
-      nper , // numero de perfiles
-      nvp  ; // numero de vertices por perfil
+    unsigned
+       nper , // numero de perfiles
+       nvp  ; // numero de vertices por perfil
+
+    // Método que crear las tablas vertices y tiangulos (nper y nvp ya asignados)
+    void crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
+                          const unsigned nperfiles,
+                          const bool     crear_tapas,
+                          const bool     cerrar_malla
+                        );
+
 
    public:
       // crea una malla de revolucion
