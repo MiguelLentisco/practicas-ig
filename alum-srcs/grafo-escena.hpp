@@ -27,6 +27,7 @@
 
 #include "matrices-tr.hpp"
 #include "materiales.hpp"
+#include "MallaRevol.hpp"
 #include "Objeto3D.hpp"
 
 // *********************************************************************
@@ -63,8 +64,7 @@ struct EntradaNGE
 class NodoGrafoEscena : public Objeto3D
 {
    protected:
-   // COMPLETAR: práctica 3: definir variables y métodos privados del nodo
-   // .......
+     std::vector<EntradaNGE> entradas; // Lista de punteros de los objetos
 
    public:
 
@@ -106,9 +106,7 @@ class NodoGrafoEscena : public Objeto3D
 class NodoGrafoEscenaParam : public NodoGrafoEscena
 {
    protected:
-      // COMPLETAR: práctica 3: declarar vector de parámetros del nodo 
-      // .......
-
+      std::vector<Parametro> parametros;
 
    public:
       // devuelve el número de parámetros
@@ -122,6 +120,27 @@ class NodoGrafoEscenaParam : public NodoGrafoEscena
       void siguienteCuadro();
 } ;
 
-#endif // GRAFO_ESCENA_HPP
-
 // *********************************************************************
+
+class CuerpoBase : public NodoGrafoEscena {
+  public:
+    CuerpoBase();
+};
+
+class CuerpoTorre : public NodoGrafoEscena {
+  public:
+    CuerpoTorre();
+};
+
+class CuerpoCabeza : public NodoGrafoEscena {
+  public:
+    CuerpoCabeza();
+};
+
+class Snowman : public NodoGrafoEscenaParam {
+  public:
+    Snowman();
+};
+
+
+#endif // GRAFO_ESCENA_HPP

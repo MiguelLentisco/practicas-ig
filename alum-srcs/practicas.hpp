@@ -67,7 +67,7 @@ class ContextoVis
       modoVis          = modoAlambre ;  // poner alambre por defecto
       dibuAlambreEsc   = true ;
       usarVBOs         = false ;
-      usarShader       = false ;
+      usarShader       = true ;
       modoSeleccionRB  = false ;
       modoSeleccionFBO = false ;
       colFuentes       = nullptr ;

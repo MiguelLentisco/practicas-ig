@@ -58,6 +58,8 @@ class Cilindro : public MallaRevol {
               const unsigned nperfiles,
               const bool     crear_tapas,
               const bool     cerrar_malla );
+    Cilindro( float r, float a );
+    Cilindro();
 };
 
 // *****************************************************************************
@@ -74,6 +76,8 @@ class Esfera : public MallaRevol {
             const unsigned nperfiles,
             const bool     crear_tapas,
             const bool     cerrar_malla );
+    Esfera( float r );
+    Esfera();
 };
 
 // ***************************************************************************
@@ -91,6 +95,8 @@ class Cono : public MallaRevol {
           const unsigned nperfiles,
           const bool     crear_tapas,
           const bool     cerrar_malla);
+    Cono( float r, float a );
+    Cono();
 };
 
 #endif

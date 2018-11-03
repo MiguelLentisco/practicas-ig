@@ -98,3 +98,7 @@ Objeto3D::~Objeto3D()
    using namespace std ;
    cout << "destruyendo objeto3D de nombre: " << nombre_obj << endl << flush ;
 }
+
+// -------------------------------------------------------------
+void Objeto3D::fijarColorNodo(const Tupla3f & color) {
+}

@@ -23,6 +23,7 @@
 #include "shaders.hpp"
 #include "grafo-escena.hpp"
 
+
 using namespace std ;
 
 // *********************************************************************
@@ -81,25 +82,34 @@ EntradaNGE::~EntradaNGE()
 
 void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
 {
-   // COMPLETAR: práctica 3: recorrer las entradas y visualizar el nodo
-   // ........
+   glMatrixMode( GL_MODELVIEW );
+   glPushMatrix();
+
+   for (unsigned i = 0; i < entradas.size(); ++i) {
+     if (entradas[i].tipo == TipoEntNGE::objeto)
+      entradas[i].objeto->visualizarGL(cv);
+     else if (entradas[i].tipo == TipoEntNGE::transformacion) {
+       glMatrixMode( GL_MODELVIEW );
+       glMultMatrixf(*(entradas[i].matriz));
+     }
+   }
+
+   glMatrixMode( GL_MODELVIEW );
+   glPopMatrix();
 
 }
 // -----------------------------------------------------------------------------
 
 NodoGrafoEscena::NodoGrafoEscena()
 {
-   // COMPLETAR: práctica 3: inicializar un nodo vacío (sin entradas)
-   // ........
-
 }
 // -----------------------------------------------------------------------------
 
 void NodoGrafoEscena::fijarColorNodo( const Tupla3f & nuevo_color )
 {
-   // COMPLETAR: práctica 3: asignarle un color plano al nodo, distinto del padre
-   // ........
-
+   for (unsigned i = 0; i < entradas.size(); ++i)
+     if (entradas[i].tipo == TipoEntNGE::objeto)
+       entradas[i].objeto->fijarColorNodo( nuevo_color );
 }
 
 // -----------------------------------------------------------------------------
@@ -108,9 +118,8 @@ void NodoGrafoEscena::fijarColorNodo( const Tupla3f & nuevo_color )
 
 unsigned NodoGrafoEscena::agregar( const EntradaNGE & entrada )
 {
-   // COMPLETAR: práctica 3: agregar la entrada al nodo, devolver índice de la entrada
-   // ........
-
+  entradas.push_back(entrada);
+  return entradas.size() - 1;
 }
 // -----------------------------------------------------------------------------
 // construir una entrada y añadirla (al final)
@@ -138,10 +147,16 @@ unsigned NodoGrafoEscena::agregar( Material * pMaterial )
 // devuelve el puntero a la matriz en la i-ésima entrada
 Matriz4f * NodoGrafoEscena::leerPtrMatriz( unsigned indice )
 {
-   // COMPLETAR: práctica 3: devolver puntero la matriz en ese índice
-   //   (debe de dar error y abortar si no hay una matriz en esa entrada)
-   // ........
 
+  if (indice >= 0 && indice < entradas.size()
+      && entradas[indice].tipo == TipoEntNGE::transformacion
+      && entradas[indice].matriz != nullptr )
+      return entradas[indice].matriz;
+
+   cerr << "ERROR P3: No hay una matriz (puntero no válido) para el índice"
+    << indice << endl << flush;
+
+    exit(EXIT_FAILURE);
 }
 // -----------------------------------------------------------------------------
 // si 'centro_calculado' es 'false', recalcula el centro usando los centros
@@ -181,25 +196,51 @@ bool NodoGrafoEscena::buscarObjeto
 // devuelve el numero de grados de libertad
 int NodoGrafoEscenaParam::numParametros()
 {
-   // COMPLETAR: práctica 3: indicar cuantos parámetros hay
-   // ........
-
+   return parametros.size();
 }
 // -----------------------------------------------------------------------------
 
 // devuelve un puntero al i-ésimo grado de libertad
 Parametro * NodoGrafoEscenaParam::leerPtrParametro( unsigned i )
 {
-   // COMPLETAR: práctica 3: devolver puntero al i-ésimo parámetro
-   // ........
-
+   assert(i >= 0 && i < parametros.size());
+   return &parametros[i];
 }
 // -----------------------------------------------------------------------------
 
 void NodoGrafoEscenaParam::siguienteCuadro()
 {
-   // COMPLETAR: práctica 3: actualizar todos los parámetros al siguiente cuadro
-   // ........
+   for (unsigned i = 0; i < parametros.size(); ++i)
+    parametros[i].siguiente_cuadro();
 
+}
 
+CuerpoBase::CuerpoBase() {
+  agregar(MAT_Escalado(3.0, 3.0, 3.0));
+  agregar(new Esfera);
+}
+
+CuerpoTorre::CuerpoTorre() {
+  agregar(MAT_Traslacion(0.0, 2.5, 0.0));
+  agregar(MAT_Escalado(2.0, 2.0, 2.0));
+  agregar(new Esfera);
+}
+
+CuerpoCabeza::CuerpoCabeza() {
+  agregar(MAT_Traslacion(0.0, 4.5, 0.0));
+  agregar(MAT_Escalado(1.2, 1.2, 1.2));
+  agregar(new Esfera);
+}
+
+Snowman::Snowman() {
+  ponerNombre("raíz del modelo jerárquico");
+  CuerpoBase * cb = new CuerpoBase;
+  CuerpoTorre * ct = new CuerpoTorre;
+  CuerpoCabeza * cc = new CuerpoCabeza;
+
+  agregar(cb);
+  agregar(ct);
+  agregar(cc);
+
+  fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
 }

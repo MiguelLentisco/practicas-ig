@@ -595,7 +595,7 @@ void Inicializa_GLFW( int argc, char * argv[] )
 void Inicializa_Vars( )
 {
    // inicializar práctica actual
-   practicaActual = 2;
+   practicaActual = 3;
    contextoVis.modoVis = modoPuntos ;
 }
 

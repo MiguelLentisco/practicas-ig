@@ -48,9 +48,10 @@ void P2_Inicializar(int argc, char * argv[])
 
    objetos2[0] = mp;
    objetos2[1] = mr;
-   objetos2[2] = new Cilindro(1.0, 1.0, 100, 100, true, true);
-   objetos2[3] = new Esfera(1.0, 100, 100, true, true);
-   objetos2[4] = new Cono(1.0, 1.0, 100, 100, true, true);
+   objetos2[2] = cilindro = new Cilindro(1.0, 1.0, 100, 100, true, true);
+   cilindro->fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
+   objetos2[3] = esfera = new Esfera(1.0, 100, 100, true, true);
+   objetos2[4] = cono = new Cono(1.0, 1.0, 100, 100, true, true);
 
    cout << "hecho." << endl << flush ;
 }
@@ -71,7 +72,7 @@ bool P2_FGE_PulsarTeclaCaracter( unsigned char tecla )
       return false ;
 
    objetoActivo2 = (objetoActivo2+1) % numObjetos2 ;
-   cout << "práctica 1: nuevo objeto activo es: " << objetoActivo2 ;
+   cout << "práctica 2: nuevo objeto activo es: " << objetoActivo2 ;
    if ( objetos2[objetoActivo2] != nullptr )
       cout << " (" << objetos2[objetoActivo2]->leerNombre() << ")." << endl ;
    else

@@ -23,6 +23,7 @@ MallaInd::MallaInd()
    // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
    ponerNombre("malla indexada, anónima");
    sinVBO = true;
+   n_vertices = n_triangulos = 0;
 
 }
 // -----------------------------------------------------------------------------
@@ -32,6 +33,7 @@ MallaInd::MallaInd( const std::string & nombreIni )
    // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
    ponerNombre(nombreIni) ;
    sinVBO = true;
+   n_vertices = n_triangulos = 0;
 
 }
 // -----------------------------------------------------------------------------
@@ -52,6 +54,8 @@ void MallaInd::visualizarBE_MI( ContextoVis & cv) {
   for (unsigned int i = 0; i < n_triangulos; ++i)
     for (unsigned int j = 0; j < 3; ++j) {
       unsigned int ind_ver = tablaTriangulos[i](j);
+      if (colVertices.size() > 0)
+        glColor3fv(colVertices[ind_ver]);
       glVertex3fv(tablaVertices[ind_ver]);
     }
   glEnd();
@@ -66,10 +70,17 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
   // Cambiar el color
   //glColor3f(1, 0, 0);
 
+  if (colVertices.size() > 0 ) {
+    glEnableClientState( GL_COLOR_ARRAY );
+    glColorPointer( 3, GL_FLOAT, 0, colVertices.data() );
+  }
+
+
   glEnableClientState( GL_VERTEX_ARRAY );
   glVertexPointer( 3, GL_FLOAT, 0, &(tablaVertices[0]) );
   glDrawElements( GL_TRIANGLES, 3 * n_triangulos, GL_UNSIGNED_INT, tablaTriangulos.data() );
   glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_COLOR_ARRAY );
 }
 
 // ----------------------------------------------------------------------------
@@ -81,6 +92,11 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
   if (sinVBO)
     crearVBOs();
 
+  if (colVertices.size() > 0 ) {
+    glBindBuffer( GL_ARRAY_BUFFER, id_vbo_col );
+    glColorPointer( 3, GL_FLOAT, 0, 0 );
+    glEnableClientState( GL_COLOR_ARRAY );
+  }
 
   glBindBuffer( GL_ARRAY_BUFFER, id_vbo_ver );
   glVertexPointer( 3, GL_FLOAT, 0, 0 );
@@ -92,6 +108,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_COLOR_ARRAY );
 }
 
 // -----------------------------------------------------------------------------
@@ -122,6 +139,8 @@ void MallaInd::visualizarGL( ContextoVis & cv )
   // Cambiar modo de visualización
   glPolygonMode( GL_FRONT_AND_BACK, modoVisualizacion);
 
+
+
    if (cv.usarVBOs)
     visualizarDE_VBOs(cv);
    else
@@ -132,50 +151,23 @@ void MallaInd::visualizarGL( ContextoVis & cv )
     #endif
 
 }
-// *****************************************************************************
 
-// *****************************************************************************
+// **************************************************************************
 
-// Constructor Cubo
-// *****************************************************************************
-
-Cubo::Cubo() : MallaInd( "malla cubo" )
-{
-  n_vertices = 8;
-  Tupla3f puntos[n_vertices] = { Tupla3f(0.0, 0.0, 0.0), Tupla3f(1.0, 0.0, 0.0),
-    Tupla3f(0.0, 1.0, 0.0), Tupla3f(1.0, 1.0, 0.0), Tupla3f(0.0, 0.0, 1.0),
-    Tupla3f(1.0, 0.0, 1.0), Tupla3f(0.0, 1.0, 1.0), Tupla3f(1.0, 1.0, 1.0) };
-  Tupla3f vectorTraslacion(-0.5, -0.5, -0.5);
-  for (unsigned int i = 0; i < n_vertices; ++i)
-    tablaVertices.push_back(puntos[i] + vectorTraslacion);
-  n_triangulos = 12;
-  Tupla3i triangulos[n_triangulos] = { Tupla3i(2, 0 ,1), Tupla3i(2, 1, 3),
-    Tupla3i(6, 2, 3), Tupla3i(6, 3, 7), Tupla3i(6, 4, 5), Tupla3i(6, 5, 7),
-    Tupla3i(2, 0, 4), Tupla3i(2, 4, 6), Tupla3i(3, 1, 5), Tupla3i(3, 5, 7),
-    Tupla3i(4, 0, 1), Tupla3i(4, 1, 5) };
-  for (unsigned int i = 0; i < n_triangulos; ++i)
-    tablaTriangulos.push_back(triangulos[i]);
-  //sinVBO = true;
+void MallaInd::fijarColorNodo(const Tupla3f & color) {
+  colVertices.clear();
+  for (unsigned i = 0; i < n_vertices; ++i)
+    colVertices.push_back(color);
 }
 
-// Constructor Tetraedro
-// *****************************************************************************
-
-Tetraedro::Tetraedro() : MallaInd( "malla tetraedro")
-{
-  n_vertices = 4;
-  Tupla3f puntos[n_vertices] = { Tupla3f(-0.5, -0.204, -0.289),
-    Tupla3f(0.5, -0.204, -0.289), Tupla3f(0.0, -0.204, 0.58),
-    Tupla3f(0.0, 0.6124, 0.0) };
-  for (unsigned int i = 0; i < n_vertices; ++i)
-    tablaVertices.push_back(puntos[i]);
-  n_triangulos = 4;
-  Tupla3i triangulos[n_triangulos] = { Tupla3i(2, 0, 1), Tupla3i(3, 0, 1),
-    Tupla3i(3, 1, 2), Tupla3i(3, 0, 2) };
-  for (unsigned int i = 0; i < n_triangulos; ++i)
-    tablaTriangulos.push_back(triangulos[i]);
-//  sinVBO = true;
+void MallaInd::colorearEntero(const std::vector<Tupla3f>& colores) {
+  colVertices.clear();
+  for (unsigned i = 0; i < n_vertices; ++i)
+    colVertices.push_back(colores[i]);
 }
+
+
+// *****************************************************************************
 
 // **************************************************************************
 
@@ -192,7 +184,73 @@ GLuint VBO_Crear(GLuint tipo, GLuint tamanio, GLvoid * puntero) {
 // **************************************************************************
 
 void MallaInd::crearVBOs() {
+  if (colVertices.size() > 0)
+    id_vbo_col = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, colVertices.data() );
   id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, tablaVertices.data() );
   id_vbo_tri = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * 3L * n_triangulos, tablaTriangulos.data() );
   sinVBO = false;
+}
+
+
+// Constructor Cubo
+// *****************************************************************************
+
+Cubo::Cubo(float lado, Tupla3f centro) : MallaInd( "malla cubo" )
+{
+  this->lado = lado;
+  this->centro = centro;
+  n_vertices = 8;
+  Tupla3f puntos[n_vertices] = { Tupla3f(0.0, 0.0, 0.0), Tupla3f(lado, 0.0, 0.0),
+    Tupla3f(0.0, lado, 0.0), Tupla3f(lado, lado, 0.0), Tupla3f(0.0, 0.0, lado),
+    Tupla3f(lado, 0.0, lado), Tupla3f(0.0, lado, lado), Tupla3f(lado, lado, lado) };
+  Tupla3f vectorTraslacion(- lado / 2.0, - lado / 2.0, - lado / 2.0);
+  for (unsigned int i = 0; i < n_vertices; ++i)
+    tablaVertices.push_back(puntos[i] + vectorTraslacion + centro);
+  n_triangulos = 12;
+  Tupla3i triangulos[n_triangulos] = { Tupla3i(2, 0 ,1), Tupla3i(2, 1, 3),
+    Tupla3i(6, 2, 3), Tupla3i(6, 3, 7), Tupla3i(6, 4, 5), Tupla3i(6, 5, 7),
+    Tupla3i(2, 0, 4), Tupla3i(2, 4, 6), Tupla3i(3, 1, 5), Tupla3i(3, 5, 7),
+    Tupla3i(4, 0, 1), Tupla3i(4, 1, 5) };
+  for (unsigned int i = 0; i < n_triangulos; ++i)
+    tablaTriangulos.push_back(triangulos[i]);
+  //sinVBO = true;
+}
+
+Cubo::Cubo(Tupla3f centro) : Cubo(1.0, centro) {
+}
+
+Cubo::Cubo(float lado) : Cubo(lado, Tupla3f(0.0, 0.0, 0.0)) {
+}
+
+Cubo::Cubo() : Cubo(1.0, Tupla3f(0.0, 0.0, 0.0)) {
+}
+
+// Constructor Tetraedro
+// *****************************************************************************
+
+Tetraedro::Tetraedro(float lado, Tupla3f centro) : MallaInd( "malla tetraedro" )
+{
+  this->lado = lado;
+  this->centro = centro;
+  n_vertices = 4;
+  Tupla3f puntos[n_vertices] = { Tupla3f(0, 0, 0),
+    Tupla3f(lado, 0, 0), Tupla3f(lado / 2.0, 0, sqrt(3) * lado / 2.0),
+    Tupla3f(lado / 2.0, sqrt(6) * lado / 3.0, sqrt(3) * lado / 6.0) };
+  Tupla3f vectorTraslacion(-lado / 2.0, -sqrt(6) * lado / 12.0, -sqrt(3) * lado / 6.0);
+  for (unsigned int i = 0; i < n_vertices; ++i)
+    tablaVertices.push_back(puntos[i] + vectorTraslacion + centro);
+  n_triangulos = 4;
+  Tupla3i triangulos[n_triangulos] = { Tupla3i(2, 0, 1), Tupla3i(3, 0, 1),
+    Tupla3i(3, 1, 2), Tupla3i(3, 0, 2) };
+  for (unsigned int i = 0; i < n_triangulos; ++i)
+    tablaTriangulos.push_back(triangulos[i]);
+}
+
+Tetraedro::Tetraedro(Tupla3f centro) : Tetraedro(1.0, centro) {
+}
+
+Tetraedro::Tetraedro(float lado) : Tetraedro(lado, Tupla3f(0.0, 0.0, 0.0)) {
+}
+
+Tetraedro::Tetraedro() : Tetraedro(1.0, Tupla3f(0.0, 0.0, 0.0)) {
 }

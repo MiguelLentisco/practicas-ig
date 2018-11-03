@@ -72,6 +72,10 @@ class Objeto3D
       virtual bool buscarObjeto( const int ident_busc,
          const Matriz4f & mmodelado, Objeto3D ** objeto, Tupla3f & centro_wc )  ;
 
+      // Dado un color dar ese color para todo el objeto, cada clase derivada
+      // la implementa a su manera
+      virtual void fijarColorNodo( const Tupla3f & color );
+
 } ;
 
 

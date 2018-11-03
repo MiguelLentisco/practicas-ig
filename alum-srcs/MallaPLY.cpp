@@ -28,10 +28,10 @@ MallaPLY::MallaPLY( const std::string & nombre_arch )
    n_vertices = vertices.size() / 3;
    n_triangulos = caras.size() / 3;
 
-   for (int i = 0; i < vertices.size(); i += 3)
+   for (unsigned i = 0; i < vertices.size(); i += 3)
     tablaVertices.push_back(Tupla3f(vertices[i], vertices[i + 1], vertices[i + 2]));
 
-   for (int i = 0; i < caras.size(); i += 3)
+   for (unsigned i = 0; i < caras.size(); i += 3)
     tablaTriangulos.push_back(Tupla3i(caras[i], caras[i + 1], caras[i + 2]));
 
    sinVBO = true;

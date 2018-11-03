@@ -24,11 +24,13 @@ class MallaInd : public Objeto3D
 
       GLuint id_vbo_ver;
       GLuint id_vbo_tri;
+      GLuint id_vbo_col;
 
       unsigned n_vertices;
       unsigned n_triangulos;
       std::vector<Tupla3f> tablaVertices;
       std::vector<Tupla3i> tablaTriangulos;
+      std::vector<Tupla3f> colVertices;
 
       // calculo de las normales de esta malla
       void calcular_normales();
@@ -39,6 +41,8 @@ class MallaInd : public Objeto3D
       void visualizarDE_MI( ContextoVis & cv );
       // visualizar con 'draw elements', en modo diferido (con VBOS)
       void visualizarDE_VBOs( ContextoVis & cv );
+      // Creamos los dos VBOs
+      void crearVBOs();
 
    public:
       // crea una malla vacía (nombre: "malla indexada nueva vacía")
@@ -47,21 +51,38 @@ class MallaInd : public Objeto3D
       MallaInd( const std::string & nombreIni );
       // visualizar el objeto con OpenGL
       virtual void visualizarGL( ContextoVis & cv ) ;
-      // Creamos los dos VBOs
-      void crearVBOs();
+      // Rellena de los colores asignados
+      void colorearEntero(const std::vector<Tupla3f>& colores);
+      // Rellena el mismo color para toda la figura
+      void fijarColorNodo(const Tupla3f & color);
+
 } ;
 // ---------------------------------------------------------------------
 
 class Cubo : public MallaInd
 {
+  protected:
+    float lado;
+    Tupla3f centro;
+
    public:
+      Cubo(float lado, Tupla3f centro);
+      Cubo(float lado);
+      Cubo(Tupla3f centro);
       Cubo();
 };
 // ---------------------------------------------------------------------
 
 class Tetraedro : public MallaInd
 {
+  protected:
+    float lado;
+    Tupla3f centro;
+
    public:
+      Tetraedro(float lado, Tupla3f centro);
+      Tetraedro(float lado);
+      Tetraedro(Tupla3f centro);
       Tetraedro();
 };
 
