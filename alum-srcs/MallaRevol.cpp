@@ -36,6 +36,9 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
 
    // calcular la tabla de normales
    calcular_normales();
+
+   // Le da color aleatorio
+   fijarColorNodo();
 }
 
 // *****************************************************************************
@@ -130,6 +133,9 @@ Cilindro::Cilindro( float r,
     perfil_original.push_back(Tupla3f(r, a * i / (nvp - 1), 0.0));
 
   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+
+  // Le da color aleatorio
+  fijarColorNodo();
 }
 
 Cilindro::Cilindro(float r, float a) : Cilindro(r, a, 50, 50, true, true) {
@@ -159,6 +165,9 @@ Esfera::Esfera( float r,
   }
 
   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+
+  // Le da color aleatorio
+  fijarColorNodo();
 }
 
 Esfera::Esfera(float r) : Esfera(r, 50, 50, true, true) {
@@ -189,6 +198,9 @@ Cono::Cono( float r,
   }
 
   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+
+  // Le da color aleatorio
+  fijarColorNodo();
 }
 
 Cono::Cono(float r, float a) : Cono(r, a, 50, 50, true, true) {

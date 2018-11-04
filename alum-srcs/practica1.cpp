@@ -32,7 +32,6 @@ void P1_Inicializar(  )
    // COMPLETAR: práctica 1: asignar valores a 'objeto[0]' y 'objeto[1]'
    // (punteros a mallas)
    objeto[0] = cubo = new Cubo();
-   cubo->fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
    objeto[1] = tetraedro = new Tetraedro();
 
 

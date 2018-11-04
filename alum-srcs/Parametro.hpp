@@ -26,9 +26,9 @@ class Parametro
      float valor_norm; //valor actual, normalizado, no acotado (crece desde 0)
      float velocidad; // velocidad actual (se suma al valor_norm)
 
-     const float v0 = 1.0; // velocidad inicial
-     const float incremento = 1.0; // incremento de p
-     const float a = 1.0; // aceleración
+     const float v0 = 0.1; // velocidad inicial
+     const float incremento = 0.2; // incremento de p
+     const float a = 0.03; // aceleración
 
 
    public:

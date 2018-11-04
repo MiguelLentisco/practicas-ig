@@ -1,0 +1,37 @@
+# Prácticas IG
+## Miguel Lentisco Ballesteros
+
+### P1
+
+- He usado los shaders, con los archivos "simple_fs.glsl" y "simple_vs.glsl"
+  que replican la misma funcionalidad que viene por defecto, creando un GLuint
+  idProg, y compilando los archivos, y luego si está activado el bool usarShader
+  de ContextoVis los utiliza.
+- El SO usado es Fedora 26 y para hacer las prácticas he usado el editor de
+  texto Atom.
+- Las teclas usadas son las mismas que se indican en el guión con dos añadidas,
+  la V y la Y. La V alterna el modo inmediato y el modo diferido (VBO).
+  La Y alterna el uso de shaders o no.
+- Las funcionalidades extra son el añadido de las teclas Y y V (aunque la V
+  se indica luego en la P2); una generalización de las clases Cubo y Tetraedro
+  para crear con la longitud de lado y centro que se quiera; y además se
+  añaden métodos en la clase MallaInd para poder colorear todo la figura
+  de un color que se le pasa "fijarColorNodo", si no se le pasa nada entonces
+  el color es aleatorio; también otra función para colorear pasando un vector
+  de colores "colorearEntero". Para la aleatoriedad se ha usado "srand",
+  "rand", y "time"; inicializando la semilla en "main.cpp".
+
+### P2
+
+- SO usado Fedora 26 y edición de código con editor de texto Atom.
+- Las teclas pulsadas son las mismas que el guión (Y añadida en la P1,
+  ya explicada).
+- No se incluyen archivos PLY extra.
+- Colores aleatorios (P1) y constructores más generales para las clases
+  Cilindro, Esfera y Cono permitiendo ponerle lado o centro deseado.
+
+### P3
+
+- Se ha modificado la clase Objeto3D incluyendo el método virtual fijarColorNodo
+  para poder usar este método con punteros de Objeto3D, que son entradas del
+  vector de EntradaNGE de la clase NodoGrafoEscena.

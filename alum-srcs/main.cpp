@@ -14,10 +14,14 @@
 #include <iostream> // std::cout
 #include <fstream>  // ifstream
 #include <cmath>    // fabs
+#include <stdlib.h>  // srand
+#include <time.h>    // time
 #include <chrono>   // función 'now', tipos 'time_point' y 'duration'
 
 // includes en ../include
 #include "aux.hpp"  // include cabeceras de opengl / glut / glut / glew
+
+#include "shaders.hpp"
 
 
 #include "CamaraInter.hpp"
@@ -67,11 +71,13 @@ GLFWwindow *
    glfw_window       = nullptr ; // puntero a la ventana GLFW
 ContextoVis
    contextoVis ;                 // contexto de visualización actual (incluye modo de visualización)
-ShaderProg * shaders;            // Programa con los shaders
+GLuint idProg;                   // Id del programa de shaders
 
 // puntero a función que se ejecuta cuando no hay eventos pendientes
 // (si es null no se hace nada)
 void (*func_desocupado_actual)(void) = nullptr ;
+
+
 
 
 // *********************************************************************
@@ -191,7 +197,10 @@ void VisualizarFrame()
    glfwMakeContextCurrent( glfw_window );
 
    // Usamos los shaders
-   shaders->activar();
+   if (contextoVis.usarShader)
+     glUseProgram( idProg );
+   else
+     glUseProgram( 0 );
 
 
    DibujarEscena();  // ordenes OpenGL para dibujar la escena correspondiente a la práctica actual
@@ -264,6 +273,10 @@ void FGE_PulsarTeclaCaracter( GLFWwindow* window, unsigned int codepoint )
       case 27  :
          exit( 0 );
          break ;
+      case 'Y' :
+         contextoVis.usarShader = !contextoVis.usarShader;
+         cout << "modo usar shader cambiado a: " << contextoVis.usarShader << endl;
+         break;
       case 'P' :
          practicaActual = (practicaActual % numPracticas) +1 ;
          cout << "Práctica actual cambiada a: " << practicaActual << endl << flush ;
@@ -328,10 +341,11 @@ void FGE_PulsarTeclaEspecial( GLFWwindow* window, int key, int scancode, int act
 
    // si la tecla tiene 'nombre', entonces no la consideramos tecla especial
    // (es una tecla tipo 'carácter', el evento lo gestiona la otra f.g.e, la de tecla tipo carácter)
-   const char * keyname = glfwGetKeyName( key, scancode ) ;
-   if ( keyname != nullptr )
+   /*
+     const char * keyname = glfwGetKeyName( key, scancode ) ;
+     if ( keyname != nullptr )
       return ;
-
+  */
    bool redisp = false ;
 
 
@@ -643,8 +657,7 @@ void Inicializa_OpenGL( )
    Inicializa_GLEW();
 
    // El shader simple que vamos a usar
-   shaders = new SimpleSP;
-
+   idProg = CrearPrograma("simple_fs.glsl", "simple_vs.glsl");
 
    // ya está
    CError();
@@ -717,6 +730,9 @@ void BucleEventosGLFW()
 
 int main( int argc, char *argv[] )
 {
+   // Para generar números aleatorios
+   srand(static_cast <unsigned> (time(0)));
+
    // incializar las variables del programa
    Inicializar( argc, argv ) ;
 

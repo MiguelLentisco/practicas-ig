@@ -68,7 +68,7 @@ void Parametro::decelerar()
 float Parametro::leer_valor_actual()
 {
   if (acotado)
-    return c + s * sin(f* 2 * M_PI * valor_norm);
+    return c + s * sin(f * 2.0 * M_PI * valor_norm);
   return c + s * valor_norm;
 }
 

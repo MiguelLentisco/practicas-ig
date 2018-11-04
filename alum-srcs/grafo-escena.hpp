@@ -122,19 +122,108 @@ class NodoGrafoEscenaParam : public NodoGrafoEscena
 
 // *********************************************************************
 
-class CuerpoBase : public NodoGrafoEscena {
+class PuntoBoca : public NodoGrafoEscena {
   public:
-    CuerpoBase();
+    PuntoBoca();
 };
 
-class CuerpoTorre : public NodoGrafoEscena {
+class MitadBoca : public NodoGrafoEscena {
   public:
-    CuerpoTorre();
+    MitadBoca();
 };
 
-class CuerpoCabeza : public NodoGrafoEscena {
+class Boca : public NodoGrafoEscena {
   public:
-    CuerpoCabeza();
+    Boca();
+};
+
+class Ojo : public NodoGrafoEscena {
+  public:
+    Ojo();
+};
+
+class Ojos : public NodoGrafoEscena {
+  public:
+    Ojos();
+};
+
+class Nariz : public NodoGrafoEscena {
+  public:
+    Nariz();
+};
+
+class BaseSombrero : public NodoGrafoEscena {
+  public:
+    BaseSombrero();
+};
+
+class Sombrero : public NodoGrafoEscena {
+  public:
+    Sombrero();
+};
+
+class PliegueBufanda : public NodoGrafoEscena {
+  public:
+    Matriz4f * mPliegue;
+    PliegueBufanda();
+};
+
+class Bufanda : public NodoGrafoEscena {
+  public:
+    Matriz4f * mPliegue;
+    Bufanda();
+};
+
+class Cabeza : public NodoGrafoEscena {
+  public:
+    Matriz4f * mPliegue;
+    Cabeza();
+};
+
+class Palo : public NodoGrafoEscena {
+  public:
+    Palo();
+};
+
+class PalitoDerecho : public NodoGrafoEscena {
+  public:
+    PalitoDerecho();
+};
+
+class PalitoIzquierdo : public NodoGrafoEscena {
+  public:
+    PalitoIzquierdo();
+};
+
+class Brazo : public NodoGrafoEscena {
+  public:
+    Matriz4f* matrizBrazo;
+    Brazo();
+};
+
+class Brazos : public NodoGrafoEscena {
+  private:
+  public:
+    Brazos();
+    Matriz4f* matrizIzq;
+    Matriz4f* matrizDer;
+};
+
+class Botones : public NodoGrafoEscena {
+  public:
+    Botones();
+};
+
+class Cuerpo : public NodoGrafoEscena {
+  public:
+    Cuerpo();
+    Matriz4f* matrizIzq;
+    Matriz4f* matrizDer;
+};
+
+class Base : public NodoGrafoEscena {
+  public:
+    Base();
 };
 
 class Snowman : public NodoGrafoEscenaParam {

@@ -68,7 +68,7 @@ bool P3_FGE_PulsarTeclaCaracter( unsigned char tecla )
          animacionesOn = !animacionesOn;
          if (animacionesOn)
           FijarFuncDesocupado( FGE_Desocupado );
-         cout << "práctica 3: las animaciones están:" << animacionesOn << endl;
+         cout << "práctica 3: las animaciones están: " << animacionesOn << endl;
          res = true;
          break ;
 
@@ -76,7 +76,7 @@ bool P3_FGE_PulsarTeclaCaracter( unsigned char tecla )
          gradoActual = (gradoActual + 1) % objetos3[objetoActivo3]->numParametros();
          cout << "práctica 3: nº grado de libertad actual: " << gradoActual << endl;
          cout << "práctica 3: el grado de libertad es: "
-          << objetos3[objetoActivo3]->leerPtrParametro(gradoActual)->leer_descripcion();
+          << objetos3[objetoActivo3]->leerPtrParametro(gradoActual)->leer_descripcion() << endl;
          res = true;
          break ;
 
@@ -98,7 +98,7 @@ bool P3_FGE_PulsarTeclaCaracter( unsigned char tecla )
            p->incrementar();
            faux = p->leer_valor_actual();
          }
-         cout << "práctica 3: el grado de libertad" << p->leer_descripcion()
+         cout << "práctica 3: el grado de libertad " << p->leer_descripcion()
               << ", vale ahora: " << faux << endl;
          res = true;
          break ;
@@ -113,7 +113,7 @@ bool P3_FGE_PulsarTeclaCaracter( unsigned char tecla )
           p->decrementar();
           faux = p->leer_valor_actual();
         }
-        cout << "práctica 3: el grado de libertad" << p->leer_descripcion()
+        cout << "práctica 3: el grado de libertad " << p->leer_descripcion()
              << ", vale ahora: " << faux << endl;
         res = true;
 
@@ -139,7 +139,7 @@ void P3_DibujarObjetos( ContextoVis & cv )
 
 bool P3_FGE_Desocupado()
 {
-   if (animacionesOn)
+   if (!animacionesOn)
       return false;
 
     objetos3[objetoActivo3]->siguienteCuadro();

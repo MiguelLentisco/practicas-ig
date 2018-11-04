@@ -39,6 +39,9 @@ MallaPLY::MallaPLY( const std::string & nombre_arch )
    // calcular la tabla de normales
    calcular_normales();
 
+   // Le da color aleatorio
+   fijarColorNodo();
+
 }
 
 // *****************************************************************************

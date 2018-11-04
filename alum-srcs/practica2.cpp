@@ -49,7 +49,6 @@ void P2_Inicializar(int argc, char * argv[])
    objetos2[0] = mp;
    objetos2[1] = mr;
    objetos2[2] = cilindro = new Cilindro(1.0, 1.0, 100, 100, true, true);
-   cilindro->fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
    objetos2[3] = esfera = new Esfera(1.0, 100, 100, true, true);
    objetos2[4] = cono = new Cono(1.0, 1.0, 100, 100, true, true);
 

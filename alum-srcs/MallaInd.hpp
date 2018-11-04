@@ -18,8 +18,6 @@ class MallaInd : public Objeto3D
 {
 
    protected:
-      // COMPLETAR: incluir aquí las variables y métodos privados que sean
-      // necesarios para una malla indexada
       bool sinVBO;
 
       GLuint id_vbo_ver;
@@ -55,6 +53,8 @@ class MallaInd : public Objeto3D
       void colorearEntero(const std::vector<Tupla3f>& colores);
       // Rellena el mismo color para toda la figura
       void fijarColorNodo(const Tupla3f & color);
+      // Rellena el mismo color para toda la figura, con color aleatorio
+      void fijarColorNodo();
 
 } ;
 // ---------------------------------------------------------------------

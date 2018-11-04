@@ -7,6 +7,7 @@
 
 #include <aux.hpp>
 #include <tuplasg.hpp>
+#include <stdlib.h>  // rand
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
 
 #define USE_GL_DRAWARRAYS
@@ -24,7 +25,6 @@ MallaInd::MallaInd()
    ponerNombre("malla indexada, anónima");
    sinVBO = true;
    n_vertices = n_triangulos = 0;
-
 }
 // -----------------------------------------------------------------------------
 
@@ -34,8 +34,9 @@ MallaInd::MallaInd( const std::string & nombreIni )
    ponerNombre(nombreIni) ;
    sinVBO = true;
    n_vertices = n_triangulos = 0;
-
 }
+
+
 // -----------------------------------------------------------------------------
 // calcula las dos tablas de normales
 
@@ -46,7 +47,6 @@ void MallaInd::calcular_normales()
 
 
 }
-
 // -----------------------------------------------------------------------------
 
 void MallaInd::visualizarBE_MI( ContextoVis & cv) {
@@ -160,6 +160,15 @@ void MallaInd::fijarColorNodo(const Tupla3f & color) {
     colVertices.push_back(color);
 }
 
+void MallaInd::fijarColorNodo() {
+  float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+  float g = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+  float b = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+  Tupla3f color = Tupla3f(r, g, b);
+  for (unsigned i = 0; i < n_vertices; ++i)
+    colVertices.push_back(color);
+}
+
 void MallaInd::colorearEntero(const std::vector<Tupla3f>& colores) {
   colVertices.clear();
   for (unsigned i = 0; i < n_vertices; ++i)
@@ -213,7 +222,7 @@ Cubo::Cubo(float lado, Tupla3f centro) : MallaInd( "malla cubo" )
     Tupla3i(4, 0, 1), Tupla3i(4, 1, 5) };
   for (unsigned int i = 0; i < n_triangulos; ++i)
     tablaTriangulos.push_back(triangulos[i]);
-  //sinVBO = true;
+   fijarColorNodo();
 }
 
 Cubo::Cubo(Tupla3f centro) : Cubo(1.0, centro) {
@@ -244,6 +253,7 @@ Tetraedro::Tetraedro(float lado, Tupla3f centro) : MallaInd( "malla tetraedro" )
     Tupla3i(3, 1, 2), Tupla3i(3, 0, 2) };
   for (unsigned int i = 0; i < n_triangulos; ++i)
     tablaTriangulos.push_back(triangulos[i]);
+  fijarColorNodo();
 }
 
 Tetraedro::Tetraedro(Tupla3f centro) : Tetraedro(1.0, centro) {

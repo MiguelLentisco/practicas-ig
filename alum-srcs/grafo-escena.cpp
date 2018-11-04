@@ -214,33 +214,228 @@ void NodoGrafoEscenaParam::siguienteCuadro()
     parametros[i].siguiente_cuadro();
 
 }
+// -----------------------------------------------------------------------------
 
-CuerpoBase::CuerpoBase() {
-  agregar(MAT_Escalado(3.0, 3.0, 3.0));
+PuntoBoca::PuntoBoca() {
+  agregar(MAT_Traslacion(0.0, 0.0, 1.0));
+  agregar(MAT_Escalado(0.05, 0.05, 0.05));
   agregar(new Esfera);
+  fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
 }
 
-CuerpoTorre::CuerpoTorre() {
-  agregar(MAT_Traslacion(0.0, 2.5, 0.0));
-  agregar(MAT_Escalado(2.0, 2.0, 2.0));
-  agregar(new Esfera);
+MitadBoca::MitadBoca() {
+  agregar(MAT_Traslacion(0.1, 0.01, 0.0));
+  agregar(new PuntoBoca);
+  agregar(MAT_Traslacion(0.08, 0.02, 0.0));
+  agregar(new PuntoBoca);
+  agregar(MAT_Traslacion(0.07, 0.02, -0.02));
+  agregar(new PuntoBoca);
+  agregar(MAT_Traslacion(0.06, 0.04, -0.02));
+  agregar(new PuntoBoca);
+  agregar(MAT_Traslacion(0.05, 0.05, -0.02));
+  agregar(new PuntoBoca);
+  agregar(MAT_Traslacion(0.04, 0.08, -0.02));
+  agregar(new PuntoBoca);
+  agregar(MAT_Traslacion(0.02, 0.09, -0.03));
+  agregar(new PuntoBoca);
 }
 
-CuerpoCabeza::CuerpoCabeza() {
+Boca::Boca() {
+  agregar(new PuntoBoca);
+  agregar(new MitadBoca);
+  agregar(MAT_Escalado(-1.0, 1.0, 1.0));
+  agregar(new MitadBoca);
+}
+
+Nariz::Nariz() {
+  agregar(MAT_Traslacion(0.0, 0.4, 0.7));
+  agregar(MAT_Rotacion(90.0, 1.0, 0.0, 0.0));
+  agregar(MAT_Escalado(0.1, 0.8, 0.1));
+  agregar(new Cono);
+  fijarColorNodo(Tupla3f(1.0, 0.5, 0.0));
+}
+
+Ojo::Ojo() {
+  agregar(MAT_Traslacion(0.4, 0.6, 0.7));
+  agregar(MAT_Escalado(0.1, 0.1, 0.1));
+  agregar(new Esfera);
+  fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
+}
+
+Ojos::Ojos() {
+  agregar(new Ojo);
+  agregar(MAT_Escalado(-1.0, 1.0, 1.0));
+  agregar(new Ojo);
+}
+
+BaseSombrero::BaseSombrero() {
+  agregar(MAT_Escalado(1.0, 0.1, 1.0));
+  agregar(new Cilindro);
+  fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
+}
+
+Sombrero::Sombrero() {
+  agregar(MAT_Rotacion(20.0, 0.0, 0.0, 1.0));
+  agregar(MAT_Traslacion(0.0, 0.95, 0.0));
+  agregar(MAT_Escalado(0.5, 0.5, 0.5));
+  agregar(new BaseSombrero);
+  agregar(MAT_Escalado(0.7, 1.4, 0.7));
+  agregar(new Cilindro);
+  fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
+
+}
+
+PliegueBufanda::PliegueBufanda() {
+  mPliegue = leerPtrMatriz(agregar(MAT_Ident()));
+  agregar(MAT_Traslacion(0.5, 0.18, 0.93));
+  agregar(MAT_Escalado(1.4, 0.4, 0.1));
+  agregar(new Cubo);
+  fijarColorNodo(Tupla3f(1.0, 0.0, 0.0));
+}
+
+Bufanda::Bufanda() {
+  agregar(MAT_Traslacion(0.0, -0.7, 0.0));
+  PliegueBufanda * pB = new PliegueBufanda;
+  mPliegue = pB->mPliegue;
+  agregar(pB);
+  agregar(MAT_Escalado(1.0, 0.4, 1.0));
+  agregar(new Cilindro(1.0, 1.0, 50, 50, false, true));
+  fijarColorNodo(Tupla3f(1.0, 0.0, 0.0));
+}
+
+Cabeza::Cabeza() {
   agregar(MAT_Traslacion(0.0, 4.5, 0.0));
   agregar(MAT_Escalado(1.2, 1.2, 1.2));
   agregar(new Esfera);
+  fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
+  Bufanda * bf = new Bufanda;
+  mPliegue = bf->mPliegue;
+  agregar(bf);
+  agregar(new Sombrero);
+  agregar(new Ojos);
+  agregar(new Nariz);
+  agregar(new Boca);
+}
+
+Palo::Palo() {
+  agregar(MAT_Escalado(0.03, 1.3, 0.03));
+  agregar(new Cilindro);
+  fijarColorNodo(Tupla3f(0.647, 0.165, 0.165));
+}
+
+PalitoDerecho::PalitoDerecho() {
+  agregar(MAT_Traslacion(0.0, 1.0, 0.0));
+  agregar(MAT_Rotacion(300.0, 1.0, 0.0, 0.0));
+  agregar(MAT_Escalado(0.80, 0.2, 0.80));
+  agregar(new Palo);
+}
+
+PalitoIzquierdo::PalitoIzquierdo() {
+  agregar(MAT_Traslacion(0.0, 1.0, 0.0));
+  agregar(MAT_Rotacion(60.0, 1.0, 0.0, 0.0));
+  agregar(MAT_Escalado(0.80, 0.2, 0.80));
+  agregar(new Palo);
+}
+
+Brazo::Brazo() {
+  matrizBrazo = leerPtrMatriz(agregar(MAT_Ident()));
+  agregar(MAT_Traslacion(0.6, 0.5, -0.2));
+  agregar(MAT_Rotacion(30.0, 0.0, 1.0, 0.0));
+  agregar(MAT_Rotacion(90.0, 1.0, 0.0, 0.0));
+  agregar(new Palo);
+  agregar(MAT_Escalado(0.55, 1.0, 0.55));
+  agregar(new PalitoDerecho);
+  agregar(new PalitoIzquierdo);
+}
+
+Brazos::Brazos() {
+  Brazo * brDer = new Brazo;
+  matrizDer = brDer->matrizBrazo;
+  agregar(brDer);
+  agregar(MAT_Escalado(-1.0, 1.0, 1.0));
+  Brazo * brIzq = new Brazo;
+  matrizIzq = brIzq->matrizBrazo;
+  agregar(brIzq);
+}
+
+Botones::Botones() {
+  agregar(MAT_Escalado(0.1, 0.1, 0.1));
+  agregar(MAT_Traslacion(0.0, -1.0, 9.7));
+  agregar(new Esfera);
+  agregar(MAT_Traslacion(0.0, 4.0, 0.0));
+  agregar(new Esfera);
+  agregar(MAT_Traslacion(0.0, 4.0, -2.0));
+  agregar(new Esfera);
+  fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
+}
+
+Cuerpo::Cuerpo() {
+  agregar(MAT_Traslacion(0.0, 2.5, 0.0));
+  agregar(MAT_Escalado(2.0, 1.5, 2.0));
+  agregar(new Esfera);
+  fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
+  agregar(new Botones);
+  Brazos * brazos = new Brazos;
+  matrizIzq = brazos->matrizIzq;
+  matrizDer = brazos->matrizDer;
+  agregar(brazos);
+}
+
+Base::Base() {
+  agregar(MAT_Escalado(3.0, 2.2, 3.0));
+  agregar(new Esfera);
+  fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
 }
 
 Snowman::Snowman() {
   ponerNombre("raíz del modelo jerárquico");
-  CuerpoBase * cb = new CuerpoBase;
-  CuerpoTorre * ct = new CuerpoTorre;
-  CuerpoCabeza * cc = new CuerpoCabeza;
 
-  agregar(cb);
-  agregar(ct);
-  agregar(cc);
+  Cuerpo * cuerpo = new Cuerpo;
+  Cabeza * cabeza = new Cabeza;
 
-  fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
+  Matriz4f * mFigura = leerPtrMatriz(agregar(MAT_Ident()));
+  Matriz4f * mFigura2 = leerPtrMatriz(agregar(MAT_Ident()));
+  Matriz4f * mFigura3 = leerPtrMatriz(agregar(MAT_Ident()));
+  Matriz4f * mBrazoIzq = cuerpo->matrizIzq;
+  Matriz4f * mBrazoDer = cuerpo->matrizDer;
+  Matriz4f * mPliegue = cabeza->mPliegue;
+
+  agregar(new Base);
+  Matriz4f * mSinBase = leerPtrMatriz(agregar(MAT_Ident()));
+  agregar(cuerpo);
+  Matriz4f * mSinCuerpo = leerPtrMatriz(agregar(MAT_Ident()));
+  agregar(cabeza);
+
+  Parametro p1("rotación del cuerpo entero", mFigura,
+    [=](float v){return MAT_Rotacion(-v, 0, 1, 0);}, true, 0, 360, 0.04);
+  parametros.push_back(p1);
+
+  Parametro p2("rotación del brazo izq", mBrazoIzq,
+    [=](float v){return MAT_Rotacion(v, 1, 0, 0);}, true, 0, 50, 0.2);
+  parametros.push_back(p2);
+
+  Parametro p3("rotación del brazo der", mBrazoDer,
+    [=](float v){return MAT_Rotacion(-v, 1, 0, 0);}, true, 0, 50, 0.2);
+  parametros.push_back(p3);
+
+  Parametro p4("mecedora del cuerpo entero", mFigura2,
+    [=](float v){return MAT_Rotacion(v, 0, 0, 1);}, true, 0, 10, 0.1);
+  parametros.push_back(p4);
+
+  Parametro p5("rotación del pliegue de la bufanda", mPliegue,
+    [=](float v){return MAT_Rotacion(v, 0, 1, 0);}, true, 0, 8, 0.5);
+  parametros.push_back(p5);
+
+  Parametro p6("movimiento der-izq", mFigura3,
+    [=](float v){return MAT_Traslacion(v, 0, 0);}, true, 0, 2, 0.01);
+  parametros.push_back(p6);
+
+  Parametro p7("salto sin la base", mSinBase,
+    [=](float v){return MAT_Traslacion(0, v, 0);}, true, 0.8, 1.2, 0.1);
+  parametros.push_back(p7);
+
+  Parametro p8("salto solo cabeza", mSinCuerpo,
+    [=](float v){return MAT_Traslacion(0, v, 0);}, true, 0.8, 1.0, 0.1);
+  parametros.push_back(p8);
+
 }
