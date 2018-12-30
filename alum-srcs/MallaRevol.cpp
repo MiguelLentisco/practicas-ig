@@ -20,7 +20,8 @@ using namespace std ;
 MallaRevol::MallaRevol( const std::string & nombre_arch,
                         const unsigned nperfiles,
                         const bool     crear_tapas,
-                        const bool     cerrar_malla  )
+                        const bool     cerrar_malla,
+                        const bool     crear_texturas )
 {
    ponerNombre( std::string("malla por revolución del perfil en '"+ nombre_arch + "'" ));
 
@@ -32,7 +33,7 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
    for (unsigned i = 0; i < vertices.size(); i += 3)
     perfil_original.push_back(Tupla3f(vertices[i], vertices[i + 1], vertices[i + 2]));
 
-   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla, crear_texturas);
 
    // calcular la tabla de normales
    calcular_normales();
@@ -43,10 +44,20 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
 
 // *****************************************************************************
 
+MallaRevol::MallaRevol( const std::string & nombre_arch,
+                        const unsigned nperfiles,
+                        const bool     crear_tapas,
+                        const bool     cerrar_malla)
+                        : MallaRevol(nombre_arch, nperfiles,
+                          crear_tapas, cerrar_malla, false) {}
+
+// *****************************************************************************
+
 void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
                                   const unsigned nperfiles,
                                   const bool     crear_tapas,
-                                  const bool     cerrar_malla)
+                                  const bool     cerrar_malla,
+                                  const bool     crear_texturas = false)
 {
   sinVBO = true;
   nper = nperfiles;
@@ -109,6 +120,26 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
          tablaTriangulos.push_back(Tupla3i(nvp * i,
             nvp * ((i + 1) % nper), n_vertices - 1));
          ++n_triangulos;
+       }
+     }
+   }
+
+   // Creamos las texturas
+   if (crear_texturas) {
+     // Vector auxiliar para las distancias
+     float d[nvp];
+     d[0] = 0.0;
+     for (unsigned int i = 0; i < nvp - 1; ++i) {
+       // Distancia entre los puntos i+1 e i
+       float dist = sqrt((perfil_original[i + 1] - perfil_original[i]).lengthSq());
+       d[i + 1] = d[i - 1] + dist;
+     }
+     // Añadimos las coordenadas de las texturas
+     for (unsigned int i = 0; i < nper; ++i) {
+       float s = i * 1.0 / (nper - 1);
+       for (unsigned int j = 0; j < nvp; ++j) {
+         float t = d[j] / d[nvp - 1];
+         coordTextura.push_back(Tupla2f(s, t));
        }
      }
    }
