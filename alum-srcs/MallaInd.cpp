@@ -52,25 +52,28 @@ void MallaInd::calcular_normales()
     a = q - p;
     b = r - p;
     // El producto vectorial de las caras es el perpendicular
-    v = a.cross(b);
+    v = b.cross(a);
     // Normalizamos
     v = v.normalized();
     normalesCaras.push_back(v);
   }
   // Y ahora calculamos las normales de los vertices
-  // Aqui vamos guardando la suma de cada vertice
-  vector<Tupla3f> sumaVectores;
+  // Vamos guardando la suma de cada vertice
   for (unsigned int i = 0; i < n_vertices; ++i)
-    sumaVectores.push_back(Tupla3f(0.0, 0.0, 0.0));
+    normalesVertices.push_back(Tupla3f(0.0, 0.0, 0.0));
   // Por cada cara añadimos su normal a la de los vertices de la cara
   for (unsigned int i = 0; i < n_triangulos; ++i) {
     Tupla3f norCara = normalesCaras[i];
-    sumaVectores[tablaTriangulos[i](0)] += norCara;
-    sumaVectores[tablaTriangulos[i](1)] += norCara;
-    sumaVectores[tablaTriangulos[i](2)] += norCara;
-  // Normalizamos los vectores y añadimos a la la lista de normales
+    normalesVertices[tablaTriangulos[i](0)] =
+      normalesVertices[tablaTriangulos[i](0)] + norCara;
+    normalesVertices[tablaTriangulos[i](1)] =
+      normalesVertices[tablaTriangulos[i](1)] + norCara;
+    normalesVertices[tablaTriangulos[i](2)] =
+      normalesVertices[tablaTriangulos[i](2)] + norCara;
+  // Normalizamos los vectores
   for (unsigned int i = 0; i < n_vertices; ++i)
-    normalesVertices[i] = sumaVectores[i].normalized();
+    if (normalesVertices[i].lengthSq() != 0)
+      normalesVertices[i] = normalesVertices[i].normalized();
   }
 
 }
