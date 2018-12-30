@@ -263,7 +263,7 @@ class ColFuentesLuz
 
    private:
    std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes
-   GLint max_num_fuentes ;
+   unsigned max_num_fuentes ;
 } ;
 
 

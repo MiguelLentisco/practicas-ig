@@ -90,7 +90,7 @@ Textura::Textura( const std::string & nombreArchivoJPG )
 void Textura::enviar() {
    unsigned int ancho = imagen->tamX();
    unsigned int alto = imagen->tamY();
-   unsigned char * texels = imagen_leerPixels();
+   unsigned char * texels = imagen->leerPixels();
    gluBuild2DMipmaps (GL_TEXTURE_2D, GL_RGB, ancho, alto, GL_RGB,
      GL_UNSIGNED_BYTE, texels);
 }
@@ -292,17 +292,17 @@ void FuenteLuz::activar()
    glLightfv (GL_LIGHT0 + ind_fuente, GL_SPECULAR, col_especular);
    // Configuramos la posición o dirección segun toque
    if (esDireccional) {
-     const float[4] ejeZ = {0.0, 0.0, 1.0, 0.0};
+     const GLfloat ejeZ[4] = {0.0, 0.0, 1.0, 0.0};
      glMatrixMode( GL_MODELVIEW );
      glPushMatrix();
      glLoadIdentity();
-     glRotatef( alpha, 0.0, 1.0, 0.0 );
-     glRotatef( beta, -1.0, 0.0, 0.0);
-     glLightf( GL_LIGHT0 + ind_fuente, GL_POSITION, ejeZ );
+     glRotatef( longi, 0.0, 1.0, 0.0 );
+     glRotatef( lati, -1.0, 0.0, 0.0);
+     glLightfv( GL_LIGHT0 + ind_fuente, GL_POSITION, ejeZ );
      glPopMatrix();
    } else {
      const GLfloat posf[4] = {posvec(0), posvec(1), posvec(2), 1.0 };
-     glLightf( GL_LIGHT0 + ind_fuente, GL_POSITION, posf);
+     glLightfv( GL_LIGHT0 + ind_fuente, GL_POSITION, posf);
    }
 }
 
@@ -393,6 +393,19 @@ ColFuentesLuz::~ColFuentesLuz()
 FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial )
 : FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(0.0, 0.5, 0.0, 1.0)) {}
 
+//----------------------------------------------------------------------
+
+void FuenteDireccional::variarAngulo(unsigned angulo, float incremento)
+{
+  switch (angulo) {
+    case 0:
+      longi = longi + incremento;
+      break;
+    case 1:
+      lati = std::min(lati + incremento, 90.0f);
+      break;
+  }
+}
 //**********************************************************************
 
 FuentePosicional::FuentePosicional( const Tupla3f& posicion )
