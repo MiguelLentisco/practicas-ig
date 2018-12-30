@@ -431,11 +431,11 @@ Snowman::Snowman() {
   parametros.push_back(p6);
 
   Parametro p7("salto sin la base", mSinBase,
-    [=](float v){return MAT_Traslacion(0, v, 0);}, true, 0.8, 1.2, 0.1);
+    [=](float v){return MAT_Traslacion(0, v, 0);}, true, 1.2, 1.2, 0.1, - M_PI / 2);
   parametros.push_back(p7);
 
   Parametro p8("salto solo cabeza", mSinCuerpo,
-    [=](float v){return MAT_Traslacion(0, v, 0);}, true, 0.8, 1.0, 0.1);
+    [=](float v){return MAT_Traslacion(0, v, 0);}, true, 1.0, 1.0, 0.1, - M_PI / 2);
   parametros.push_back(p8);
 
 }

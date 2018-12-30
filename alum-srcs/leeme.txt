@@ -35,3 +35,8 @@
 - Se ha modificado la clase Objeto3D incluyendo el método virtual fijarColorNodo
   para poder usar este método con punteros de Objeto3D, que son entradas del
   vector de EntradaNGE de la clase NodoGrafoEscena.
+- Se ha modificado la clase Parametro incluyendo un nuevo miembro float fase,
+  que permite que los objetos empiecen el movimiento en cualquier parte del
+  movimiento acotado, quitando la restricción de que siempre era en la parte
+  central. Si no si indica nada la fase es 0 y por tanto funciona de la misma
+  manera original.

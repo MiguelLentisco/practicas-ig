@@ -17,12 +17,32 @@ Parametro::Parametro(
    float                p_s,
    float                p_f
 ) : descripcion(p_descripcion), acotado(p_acotado),
-    fun_calculo_matriz(p_fun_calculo_matriz), c(p_c), s(p_s), f(p_f),
+    fun_calculo_matriz(p_fun_calculo_matriz), c(p_c), s(p_s), f(p_f), fase(0),
     ptr_mat(p_ptr_mat)
 {
   valor_norm = 0;
   velocidad = v0;
 }
+// -----------------------------------------------------------------------------
+Parametro::Parametro(
+   const std::string &  p_descripcion,
+   Matriz4f *           p_ptr_mat,
+   TFuncionCMF          p_fun_calculo_matriz,
+   bool                 p_acotado,
+   float                p_c,
+   float                p_s,
+   float                p_f,
+   float                p_fase
+) : descripcion(p_descripcion), acotado(p_acotado),
+    fun_calculo_matriz(p_fun_calculo_matriz), c(p_c), s(p_s), f(p_f), fase(p_fase),
+    ptr_mat(p_ptr_mat)
+{
+  valor_norm = 0;
+  velocidad = v0;
+}
+// --------------------------------
+
+
 // -----------------------------------------------------------------------------
 
 void Parametro::siguiente_cuadro()
@@ -68,7 +88,7 @@ void Parametro::decelerar()
 float Parametro::leer_valor_actual()
 {
   if (acotado)
-    return c + s * sin(f * 2.0 * M_PI * valor_norm);
+    return c + s * sin(f * 2.0 * M_PI * valor_norm + fase);
   return c + s * valor_norm;
 }
 

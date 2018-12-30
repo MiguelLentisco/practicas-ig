@@ -18,6 +18,9 @@ Los grados de libertad (parámetros) comparten las siguientes constantes:
   - Incremento = 0.2
   - Aceleración = 0.03
 
+Se ha añadido a la clase Parametro el valor float fase, que permite cambiar
+la posición inicial del objeto en un movimiento acotado.
+
 Para el objeto creado se han hecho los siguientes grados de libertad:
   - P1: Rotación del cuerpo entero, que afecta a la clase Snowman, a toda la
     figura entera. Es una rotación negativa del eje Y de 360 grados acotada (giro
@@ -39,7 +42,9 @@ Para el objeto creado se han hecho los siguientes grados de libertad:
     0 y frecuencia 0.01.
   - P7: Salto sin la base, afecta a la clase Snowman, afecta a la cabeza y al
     cuerpo pero no a la base, traslación en el eje Y de 1.2 unidades acotada,
-    inicialmente en 0.8 y de frecuencia 0.1.
+    de centro 1.2, frecuencia 0.1 y desfase - PI / 2, haciendo que empiece el
+    movimiento en el estado original del muñeco.
   - P8: Salto solo de la cabeza, afecta a la clase Snowman, afecta únicamente
-    a la cabeza, traslación en el eje Y de 1.0 unidades acotada, inicialmente en
-    0.8 y de frecuencia 0.1.
+    a la cabeza, traslación en el eje Y de 1.0 unidades acotada, de centro 1.0,
+    frecuencia 0.1 y desfase - PI / 2, haciendo que empiece el movimiento en el
+    estado original de muñeco.
