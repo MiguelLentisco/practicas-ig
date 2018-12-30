@@ -38,8 +38,7 @@ MallaInd::MallaInd( const std::string & nombreIni )
 
 
 // -----------------------------------------------------------------------------
-// calcula las dos tablas de normales
-
+// Calcula las dos tablas de normales
 void MallaInd::calcular_normales()
 {
   // Primero calculamos las normales de las caras

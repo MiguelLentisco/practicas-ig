@@ -33,6 +33,9 @@ class MallaInd : public Objeto3D
       std::vector<Tupla3f> normalesCaras;
       std::vector<Tupla3f> normalesVertices;
 
+      // Tabla de coordenadas de la textura
+      std::vector<GLFloat> coordTextura;
+
       // calculo de las normales de esta malla
       void calcular_normales();
 
