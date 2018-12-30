@@ -76,20 +76,23 @@ void PilaMateriales::pop(  )
 
 Textura::Textura( const std::string & nombreArchivoJPG )
 {
-   // COMPLETAR: práctica 4: inicializar todas las variables
-   // .....
-
+  imagen = NULL;
+  imagen = new jpg::Imagen(nombreArchivoJPG);
+  enviada = false;
+  modo_gen_ct = mgct_desactivada;
+  glGenTextures( 1, &ident_textura );
 }
 
 // ---------------------------------------------------------------------
 
 //----------------------------------------------------------------------
 
-void Textura::enviar()
-{
-   // COMPLETAR: práctica 4: enviar la imagen de textura a la GPU
-   // .......
-
+void Textura::enviar() {
+   unsigned int ancho = imagen->tamX();
+   unsigned int alto = imagen->tamY();
+   unsigned char * texels = imagen_leerPixels();
+   gluBuild2DMipmaps (GL_TEXTURE_2D, GL_RGB, ancho, alto, GL_RGB,
+     GL_UNSIGNED_BYTE, texels);
 }
 
 //----------------------------------------------------------------------
@@ -110,9 +113,9 @@ Textura::~Textura( )
 
 void Textura::activar(  )
 {
-   // COMPLETAR: práctica 4: enviar la textura a la GPU (solo la primera vez) y activarla
-   // .......
-
+  glBindTexture( GL_TEXTURE_2D, ident_textura );
+  if (!enviada)
+    enviar();
 }
 // *********************************************************************
 
@@ -229,12 +232,15 @@ void Material::activar(  )
 
 //**********************************************************************
 
+// Para fuente de luz direccional
 FuenteLuz::FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB & p_color )
 {
    //CError();
 
    if ( trazam )
       cout << "creando fuente de luz." <<  endl << flush ;
+
+   esDireccional = true;
 
    // inicializar parámetros de la fuente de luz
    longi_ini = p_longi_ini ;
@@ -253,11 +259,51 @@ FuenteLuz::FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB &
 
 //----------------------------------------------------------------------
 
+FuenteLuz::FuenteLuz( const Tupla3f& posicion, const VectorRGB & p_color )
+{
+   //CError();
+
+   if ( trazam )
+      cout << "creando fuente de luz." <<  endl << flush ;
+
+   esDireccional = false;
+
+   // inicializar parámetros de la fuente de luz
+   posvec = posicion;
+
+   col_ambiente  = p_color ;
+   col_difuso    = p_color ;
+   col_especular = p_color ;
+
+   ind_fuente = -1 ; // la marca como no activable hasta que no se le asigne indice
+
+   //CError();
+}
+
+//----------------------------------------------------------------------
+
 void FuenteLuz::activar()
 {
-   // COMPLETAR: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
-   // .....
-
+   // Activamos la fuente
+   glEnable (GL_LIGHT0 + ind_fuente);
+   // Configuramos los colores
+   glLightfv (GL_LIGHT0 + ind_fuente, GL_AMBIENT, col_ambiente);
+   glLightfv (GL_LIGHT0 + ind_fuente, GL_DIFFUSE, col_difuso);
+   glLightfv (GL_LIGHT0 + ind_fuente, GL_SPECULAR, col_especular);
+   // Configuramos la posición o dirección segun toque
+   if (esDireccional) {
+     const float[4] ejeZ = {0.0, 0.0, 1.0, 0.0};
+     glMatrixMode( GL_MODELVIEW );
+     glPushMatrix();
+     glLoadIdentity();
+     glRotatef( alpha, 0.0, 1.0, 0.0 );
+     glRotatef( beta, -1.0, 0.0, 0.0);
+     glLightf( GL_LIGHT0 + ind_fuente, GL_POSITION, ejeZ );
+     glPopMatrix();
+   } else {
+     const GLfloat posf[4] = {posvec(0), posvec(1), posvec(2), 1.0 };
+     glLightf( GL_LIGHT0 + ind_fuente, GL_POSITION, posf);
+   }
 }
 
 //----------------------------------------------------------------------
@@ -299,7 +345,7 @@ bool FuenteLuz::gestionarEventoTeclaEspecial( int key )
 
 ColFuentesLuz::ColFuentesLuz()
 {
-   max_num_fuentes = -1 ;
+   max_num_fuentes = 8 ;
 }
 //----------------------------------------------------------------------
 
@@ -307,16 +353,22 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 {
    assert( pf != nullptr );
 
-   pf->ind_fuente = vpf.size() ;
-   vpf.push_back( pf ) ;
+   if (vpf.size() < max_num_fuentes) {
+     pf->ind_fuente = vpf.size() ;
+     vpf.push_back( pf ) ;
+   }
 }
 //----------------------------------------------------------------------
-// activa una colección de fuentes de luz 
+// activa una colección de fuentes de luz
 
 void ColFuentesLuz::activar( unsigned id_prog )
 {
-   // COMPLETAR: práctica 4: activar una colección de fuentes de luz
-   // .....
+   glEnable(GL_LIGHTING);
+
+   for (unsigned int i = 0; i < vpf.size(); ++i)
+    vpf[i]->activar();
+   for (unsigned int i = vpf.size(); i < max_num_fuentes; ++i)
+    glDisable(GL_LIGHT0 + i);
 
 }
 //----------------------------------------------------------------------
@@ -334,4 +386,20 @@ ColFuentesLuz::~ColFuentesLuz()
       delete vpf[i] ;
       vpf[i] = NULL ;
    }
+}
+
+//**********************************************************************
+
+FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial )
+: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(0.0, 0.5, 0.0, 1.0)) {}
+
+//**********************************************************************
+
+FuentePosicional::FuentePosicional( const Tupla3f& posicion )
+  : FuenteLuz(posicion, Tupla4f(0.0, 0.4, 0.0, 1.0)) {}
+
+//**********************************************************************
+
+ColeccionFuentesP4::ColeccionFuentesP4() {
+
 }

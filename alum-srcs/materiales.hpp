@@ -207,6 +207,12 @@ class FuenteLuz
    // p_color     == color de la fuente de luz (amb, dif y spec )
    FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB & p_color ) ;
 
+   // inicializa la fuente de luz
+   //
+   // posicional  == coordenadas de posicion iniciales
+   // p_color     == color de la fuente de luz (amb, dif y spec )
+   FuenteLuz( const Tupla3f& posicion, const VectorRGB & p_color ) ;
+
    // cambia el estado de OpenGL de forma que a partir de la llamada
    // se usará esta fuente de luz en los calculos del MIL
    // (en cada momento puede haber varias fuentes activadas)
@@ -223,6 +229,8 @@ public:
     float
       longi,      // longitud actual de la fuente direccional (en grados, entre 0 y 360)
       lati ;      // latitud actual de la fuente direccional (en grados, entre -90 y 90)
+    Tupla3f
+      posvec;     // Vector de posicion para la fuente posicional
 protected:
    VectorRGB
       col_ambiente,  // color de la fuente para la componente ambiental
@@ -231,8 +239,10 @@ protected:
    GLenum
       ind_fuente ;// indice de la fuente de luz en el vector, se asigna al insertarlo
    float
-      longi_ini,  // valor inicial de 'longi'
-      lati_ini ;  // valor inicial de 'lati'
+      longi_ini,  // valor inicial de 'longi' alpha (si direccional)
+      lati_ini ;  // valor inicial de 'lati' beta (si direccional)
+   bool
+      esDireccional; // si activado direccional, si no es posicional
 
    friend class ColFuentesLuz ;
 } ;
@@ -255,4 +265,38 @@ class ColFuentesLuz
    std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes
    GLint max_num_fuentes ;
 } ;
+
+
+//**********************************************************************
+// Clase FuenteDireccional
+
+class FuenteDireccional : public FuenteLuz
+{
+  public:
+    FuenteDireccional(float alpha_inicial, float beta_inicial );
+
+    // Cambiar ángulo: angulo == 0 -> variar alpha, angulo == 1 -> variar beta
+    void variarAngulo(unsigned angulo, float incremento);
+};
+
+//**********************************************************************
+// Clase FuentePosicional
+
+class FuentePosicional : public FuenteLuz
+{
+  public:
+    FuentePosicional(const Tupla3f& posicion);
+};
+
+//**********************************************************************
+// Clase ColeccionFuentesP4
+// ---------------
+// Clase que contiene las fuentes de luz a usar en la practica 4
+
+class ColeccionFuentesP4 : public ColFuentesLuz
+{
+  public:
+    ColeccionFuentesP4();
+};
+
 #endif
