@@ -23,6 +23,8 @@ class MallaInd : public Objeto3D
       GLuint id_vbo_ver;
       GLuint id_vbo_tri;
       GLuint id_vbo_col;
+      GLuint id_vbo_cctt; // Coord textura
+      GLuint id_vbo_nor_ver; // Vertices normales
 
       unsigned n_vertices;
       unsigned n_triangulos;
@@ -47,6 +49,14 @@ class MallaInd : public Objeto3D
       void visualizarDE_VBOs( ContextoVis & cv );
       // Creamos los dos VBOs
       void crearVBOs();
+      // Visualizar con normales y cctt con VBO
+      void visualizarVBOs_NT( ContextoVis & cv );
+      // Visualizar normales y cctt
+      void visualizarDE_NT( ContextoVis & cv );
+      // Visualizar cctt begin/end
+      void visualizarBE_CT( ContextoVis & cv );
+
+
 
    public:
       // crea una malla vacía (nombre: "malla indexada nueva vacía")
@@ -61,6 +71,10 @@ class MallaInd : public Objeto3D
       void fijarColorNodo(const Tupla3f & color);
       // Rellena el mismo color para toda la figura, con color aleatorio
       void fijarColorNodo();
+
+      void visualizarIluminacionPlana( ContextoVis & cv );
+      void visualizarIluminacionSuaveDE( ContextoVis & cv );
+      void visualizarIluminacionSuaveVBO( ContextoVis & cv );
 
 } ;
 // ---------------------------------------------------------------------

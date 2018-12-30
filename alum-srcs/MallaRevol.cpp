@@ -59,6 +59,11 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
                                   const bool     cerrar_malla,
                                   const bool     crear_texturas = false)
 {
+  if (cerrar_malla && crear_texturas) {
+    cerr << "ERROR: No se pueden crear texturas con mallas cerradas" << endl;
+    exit(-1);
+  }
+
   sinVBO = true;
   nper = nperfiles;
   nvp = perfil_original.size();

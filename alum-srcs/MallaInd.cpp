@@ -93,6 +93,93 @@ void MallaInd::visualizarBE_MI( ContextoVis & cv ) {
 
 // -----------------------------------------------------------------------------
 
+void MallaInd::visualizarBE_CT( ContextoVis & cv ) {
+  glBegin( GL_TRIANGLES );
+  for (unsigned int i = 0; i < n_triangulos; ++i)
+    for (unsigned int j = 0; j < 3; ++j) {
+      unsigned int ind_ver = tablaTriangulos[i](j);
+      glTexCoord2fv(coordTextura[ind_ver]);
+      glVertex3fv(tablaVertices[ind_ver]);
+    }
+  glEnd();
+}
+
+// -----------------------------------------------------------------------------
+
+void MallaInd::visualizarIluminacionPlana( ContextoVis & cv ) {
+  glShadeModel( GL_FLAT );
+  glBegin( GL_TRIANGLES );
+  for (unsigned int i = 0; i < n_triangulos; ++i)
+    for (unsigned int j = 0; j < 3; ++j) {
+      unsigned int ind_ver = tablaTriangulos[i](j);
+      if (coordTextura.size() > 0)
+        glTexCoord2fv(coordTextura[ind_ver] );
+      if (colVertices.size() > 0)
+        glColor3fv(colVertices[ind_ver] );
+      if (normalesCaras.size() > 0)
+        glNormal3fv( normalesCaras[ind_ver] );
+      glVertex3fv(tablaVertices[ind_ver] );
+    }
+  glEnd();
+}
+
+// -----------------------------------------------------------------------------
+
+void MallaInd::visualizarIluminacionSuaveDE( ContextoVis & cv ) {
+  glShadeModel( GL_SMOOTH );
+
+  if (colVertices.size() > 0 ) {
+    glEnableClientState( GL_COLOR_ARRAY );
+    glColorPointer( 3, GL_FLOAT, 0, colVertices.data() );
+  }
+
+  if (normalesVertices.size() > 0) {
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glNormalPointer( GL_FLOAT, 0, normalesVertices.data() );
+  }
+
+  if (coordTextura.size() > 0 ) {
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glTexCoordPointer( 2, GL_FLOAT, 0, coordTextura.data() );
+  }
+
+  glEnableClientState( GL_VERTEX_ARRAY );
+  glVertexPointer( 3, GL_FLOAT, 0, tablaVertices.data() );
+  glDrawElements( GL_TRIANGLES, 3 * n_triangulos, GL_UNSIGNED_INT, tablaTriangulos.data() );
+
+  glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+  glDisableClientState( GL_NORMAL_ARRAY );
+  glDisableClientState( GL_COLOR_ARRAY );
+
+}
+
+// -----------------------------------------------------------------------------
+
+void MallaInd::visualizarIluminacionSuaveVBO( ContextoVis & cv ) {
+  glShadeModel( GL_SMOOTH );
+
+  if (sinVBO)
+    crearVBOs();
+
+  // Activar VBO de coord normales
+  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_nor_ver );
+  glNormalPointer( GL_FLOAT, 0, 0 );
+  glEnableClientState( GL_NORMAL_ARRAY );
+  // Activar VBO de coord textura
+  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_cctt );
+  glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
+  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+  visualizarDE_VBOs(cv);
+  // Desactivar punteros a tablas
+  glDisableClientState( GL_NORMAL_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+
+// -----------------------------------------------------------------------------
+
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
   // Cambiar el color
@@ -156,18 +243,26 @@ void MallaInd::visualizarGL( ContextoVis & cv )
       modoVisualizacion = GL_FILL;
    }
 
-  // Cambiar modo de visualización
-  glPolygonMode( GL_FRONT_AND_BACK, modoVisualizacion);
+   // Cambiar modo de visualización
+   glPolygonMode( GL_FRONT_AND_BACK, modoVisualizacion);
 
-   if (cv.usarVBOs)
-    visualizarDE_VBOs(cv);
-   else
-    #ifdef USE_GL_DRAWARRAYS
-      visualizarDE_MI(cv);
-    #elif
-      visualizarBE_MI(cv);
-    #endif
-
+   if (cv.modoVis == modoIluminacionPlano) {
+     visualizarIluminacionPlana(cv);
+   } else if (cv.modoVis == modoIluminacionSuave) {
+     if (cv.usarVBOs)
+      visualizarIluminacionSuaveVBO(cv);
+     else
+      visualizarIluminacionSuaveDE(cv);
+   } else {
+     if (cv.usarVBOs)
+      visualizarDE_VBOs(cv);
+     else
+      #ifdef USE_GL_DRAWARRAYS
+        visualizarDE_MI(cv);
+      #elif
+        visualizarBE_MI(cv);
+      #endif
+    }
 }
 
 // **************************************************************************
@@ -196,6 +291,44 @@ void MallaInd::colorearEntero(const std::vector<Tupla3f>& colores) {
 
 // *****************************************************************************
 
+// Usar Normales y Coordenadas de Texturas con VBO
+void MallaInd::visualizarVBOs_NT( ContextoVis & cv ) {
+  if (sinVBO)
+    crearVBOs();
+
+  // Activar VBO de coord normales
+  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_nor_ver );
+  glNormalPointer( GL_FLOAT, 0, 0 );
+  glEnableClientState( GL_NORMAL_ARRAY );
+  // Activar VBO de coord textura
+  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_cctt );
+  glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
+  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+  visualizarDE_VBOs(cv);
+  // Desactivar punteros a tablas
+  glDisableClientState( GL_NORMAL_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+// **************************************************************************
+
+void MallaInd::visualizarDE_NT( ContextoVis & cv  ) {
+  glVertexPointer( 3, GL_FLOAT, 0, tablaVertices.data() );
+  glTexCoordPointer( 2, GL_FLOAT, 0, coordTextura.data() );
+  glNormalPointer( GL_FLOAT, 0, normalesVertices.data() );
+
+  glEnableClientState( GL_VERTEX_ARRAY );
+  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+  glDrawElements( GL_TRIANGLES, n_triangulos, GL_UNSIGNED_INT, tablaTriangulos.data() );
+
+  glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_NORMAL_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+
 // **************************************************************************
 
 GLuint VBO_Crear(GLuint tipo, GLuint tamanio, GLvoid * puntero) {
@@ -212,9 +345,18 @@ GLuint VBO_Crear(GLuint tipo, GLuint tamanio, GLvoid * puntero) {
 
 void MallaInd::crearVBOs() {
   if (colVertices.size() > 0)
-    id_vbo_col = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, colVertices.data() );
-  id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, tablaVertices.data() );
-  id_vbo_tri = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * 3L * n_triangulos, tablaTriangulos.data() );
+    id_vbo_col = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices,
+      colVertices.data() );
+  id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices,
+      tablaVertices.data() );
+  id_vbo_tri = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER,
+      sizeof(unsigned) * 3L * n_triangulos, tablaTriangulos.data() );
+  if (coordTextura.size() > 0)
+    id_vbo_cctt = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 2L * n_vertices,
+      coordTextura.data() );
+  if (normalesVertices.size() > 0)
+    id_vbo_nor_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices,
+      normalesVertices.data() );
   sinVBO = false;
 }
 

@@ -30,6 +30,8 @@ typedef enum
 
    modoColorNodoPlano,
    modoMateriales,
+   modoIluminacionPlano,
+   modoIluminacionSuave,
    numModosVis
 }
    ModosVis;
@@ -42,7 +44,9 @@ const std::string nombreModo[numModosVis] =
       "modoSolido",
 
       "modoColorNodoPlano",
-      "modoMateriales"
+      "modoMateriales",
+      "modoIluminacionPlano",
+      "modoIluminacionSuave"
    } ;
 
 // --------------------------------------------------------------------

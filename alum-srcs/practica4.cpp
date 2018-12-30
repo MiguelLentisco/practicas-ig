@@ -78,9 +78,6 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 
 void P4_DibujarObjetos( ContextoVis & cv )
 {
-  // NO estoy seguro si esto va aqui
-  glEnable( GL_LIGHTING );
-  glEnable( GL_TEXTURE_2D );
    // COMPLETAR: práctica 4: visualizar objetos
    //     (requiere activar las fuentes de luz y luego dibujar el grafo de escena)
    // ....
