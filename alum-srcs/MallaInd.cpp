@@ -42,14 +42,42 @@ MallaInd::MallaInd( const std::string & nombreIni )
 
 void MallaInd::calcular_normales()
 {
-   // COMPLETAR: en la práctica 2: calculo de las normales de la malla
-   // .......
-
+  // Primero calculamos las normales de las caras
+  for (unsigned int i = 0; i < n_triangulos; ++i) {
+    Tupla3f p, q, r, a, b, v;
+    // Los vertices de la cara
+    p = tablaVertices[tablaTriangulos[i](0)];
+    q = tablaVertices[tablaTriangulos[i](1)];
+    r = tablaVertices[tablaTriangulos[i](2)];
+    // Tomamos dos lados de la cara
+    a = q - p;
+    b = r - p;
+    // El producto vectorial de las caras es el perpendicular
+    v = a.cross(b);
+    // Normalizamos
+    v = v.normalized();
+    normalesCaras.push_back(v);
+  }
+  // Y ahora calculamos las normales de los vertices
+  // Aqui vamos guardando la suma de cada vertice
+  vector<Tupla3f> sumaVectores;
+  for (unsigned int i = 0; i < n_vertices; ++i)
+    sumaVectores.push_back(Tupla3f(0.0, 0.0, 0.0));
+  // Por cada cara añadimos su normal a la de los vertices de la cara
+  for (unsigned int i = 0; i < n_triangulos; ++i) {
+    Tupla3f norCara = normalesCaras[i];
+    sumaVectores[tablaTriangulos[i](0)] += norCara;
+    sumaVectores[tablaTriangulos[i](1)] += norCara;
+    sumaVectores[tablaTriangulos[i](2)] += norCara;
+  // Normalizamos los vectores y añadimos a la la lista de normales
+  for (unsigned int i = 0; i < n_vertices; ++i)
+    normalesVertices[i] = sumaVectores[i].normalized();
+  }
 
 }
 // -----------------------------------------------------------------------------
 
-void MallaInd::visualizarBE_MI( ContextoVis & cv) {
+void MallaInd::visualizarBE_MI( ContextoVis & cv ) {
   glBegin( GL_TRIANGLES );
   for (unsigned int i = 0; i < n_triangulos; ++i)
     for (unsigned int j = 0; j < 3; ++j) {
@@ -65,8 +93,6 @@ void MallaInd::visualizarBE_MI( ContextoVis & cv) {
 
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
-   // COMPLETAR: en la práctica 1: visualizar en modo inmediato (glDrawElements)
-
   // Cambiar el color
   //glColor3f(1, 0, 0);
 
@@ -74,7 +100,6 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
     glEnableClientState( GL_COLOR_ARRAY );
     glColorPointer( 3, GL_FLOAT, 0, colVertices.data() );
   }
-
 
   glEnableClientState( GL_VERTEX_ARRAY );
   glVertexPointer( 3, GL_FLOAT, 0, &(tablaVertices[0]) );
@@ -86,9 +111,6 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
 // ----------------------------------------------------------------------------
 void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 {
-  // COMPLETAR: práctica 1: visualizar en modo diferido,
-  //                        usando VBOs (Vertex Buffer Objects)
-
   if (sinVBO)
     crearVBOs();
 
@@ -115,10 +137,6 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
 void MallaInd::visualizarGL( ContextoVis & cv )
 {
-   // COMPLETAR: práctica 1: visualizar en modo inmediato o en modo diferido (VBOs),
-   // (tener en cuenta el modo de visualización en 'cv' (alambre, sólido, etc..))
-   //
-
    // Cambiar modo de visualización
    GLenum modoVisualizacion;
 
@@ -138,8 +156,6 @@ void MallaInd::visualizarGL( ContextoVis & cv )
 
   // Cambiar modo de visualización
   glPolygonMode( GL_FRONT_AND_BACK, modoVisualizacion);
-
-
 
    if (cv.usarVBOs)
     visualizarDE_VBOs(cv);

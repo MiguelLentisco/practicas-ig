@@ -30,6 +30,9 @@ class MallaInd : public Objeto3D
       std::vector<Tupla3i> tablaTriangulos;
       std::vector<Tupla3f> colVertices;
 
+      std::vector<Tupla3f> normalesCaras;
+      std::vector<Tupla3f> normalesVertices;
+
       // calculo de las normales de esta malla
       void calcular_normales();
 
