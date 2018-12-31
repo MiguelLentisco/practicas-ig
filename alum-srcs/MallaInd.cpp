@@ -263,10 +263,10 @@ Cubo::Cubo(float lado, Tupla3f centro) : MallaInd( "malla cubo" )
   for (unsigned int i = 0; i < n_vertices; ++i)
     tablaVertices.push_back(puntos[i] + vectorTraslacion + centro);
   n_triangulos = 12;
-  Tupla3i triangulos[n_triangulos] = { Tupla3i(1, 2 , 0), Tupla3i(1, 3, 2),
-    Tupla3i(1, 4, 0), Tupla3i(1, 5, 4), Tupla3i(5, 3, 1), Tupla3i(5, 7, 3),
-    Tupla3i(3, 6, 2), Tupla3i(3, 7, 6), Tupla3i(4, 2, 0), Tupla3i(4, 6, 2),
-    Tupla3i(5, 6, 4), Tupla3i(5, 7, 6) };
+  Tupla3i triangulos[n_triangulos] = { Tupla3i(0, 1, 2), Tupla3i(1, 3, 2),
+    Tupla3i(1, 5, 3), Tupla3i(5, 7, 3), Tupla3i(4, 0, 1), Tupla3i(5, 4, 1),
+    Tupla3i(2, 3, 6), Tupla3i(3, 7, 6), Tupla3i(5, 6, 7), Tupla3i(4, 6, 5),
+    Tupla3i(4, 2, 6), Tupla3i(4, 0, 2) };
   for (unsigned int i = 0; i < n_triangulos; ++i)
     tablaTriangulos.push_back(triangulos[i]);
    fijarColorNodo();
