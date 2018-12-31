@@ -22,6 +22,7 @@
 
 #include "matrices-tr.hpp"
 #include "materiales.hpp"
+#include "grafo-escena.hpp"
 
 using namespace std ;
 
@@ -194,7 +195,9 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
    ponerNombre("material color plano, ilum.");
    coloresCero();
 
-   color = VectorRGB(colorAmbDif(0), colorAmbDif(1), colorAmbDif(2), 1.0);
+   glColor3fv( colorAmbDif );
+   glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+
    del.emision = tra.emision = VectorRGB(0.0, 0.0, 0.0, 1.0);
    del.ambiente = tra.ambiente = VectorRGB(ka, ka, ka, 1.0);
    del.difusa = tra.difusa = VectorRGB(kd, kd, kd, 1.0);
@@ -273,6 +276,9 @@ void Material::activar(  )
    } else {
      glDisable( GL_LIGHTING );
      glColor4fv( color );
+     glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
+     glColorMaterial(GL_FRONT_AND_BACK,GL_EMISSION);
+     glColorMaterial(GL_FRONT_AND_BACK,GL_SPECULAR);
    }
 
    if (tex != NULL)
@@ -466,5 +472,26 @@ FuentePosicional::FuentePosicional( const Tupla3f& posicion )
 //**********************************************************************
 
 ColeccionFuentesP4::ColeccionFuentesP4() {
-
+  insertar(new FuenteDireccional(20, 30));
+  insertar(new FuentePosicional(Tupla3f(3.0, 0.0, 1.0)));
 }
+
+//**********************************************************************
+
+MaterialLata::MaterialLata() : Material("../imgs/lata-coke.jpg") {}
+
+//**********************************************************************
+
+MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.0, 1.0, 1.0, 1.0) {}
+
+//**********************************************************************
+
+MaterialPeonMadera::MaterialPeonMadera() : Material("../imgs/text-madera,jpg") {}
+
+//**********************************************************************
+
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.2, 1.0, 0.1, 0.1) {}
+
+//**********************************************************************
+
+MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.4, 0.1, 1.0, 1.0) {}

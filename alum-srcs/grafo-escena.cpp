@@ -439,3 +439,33 @@ Snowman::Snowman() {
   parametros.push_back(p8);
 
 }
+
+//**********************************************************************
+
+CentroLata::CentroLata()
+{
+  agregar(new MaterialLata);
+  agregar(new MallaRevol("../plys/lata-pcue.ply", 100, false, false, false));
+}
+
+//**********************************************************************
+
+TapasLata::TapasLata() {
+  agregar(new MaterialTapasLata());
+  agregar(new MallaRevol("../plys/lata-pinf.ply", 100, false, false, false));
+  agregar(new MallaRevol("../plys/lata-psup.ply", 100, false, false, false));
+}
+
+//**********************************************************************
+
+Lata::Lata() {
+  agregar(new TapasLata());
+  agregar(new CentroLata());
+}
+
+//**********************************************************************
+
+EscenaP4::EscenaP4() {
+  ponerNombre("Escena P4");
+  agregar(new Lata());
+}

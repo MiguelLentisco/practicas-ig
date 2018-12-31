@@ -29,6 +29,7 @@
 #include "jpg_imagen.hpp"
 
 
+
 // *********************************************************************
 // algunes declaraciones auxiliares importantes
 
@@ -297,6 +298,36 @@ class ColeccionFuentesP4 : public ColFuentesLuz
 {
   public:
     ColeccionFuentesP4();
+};
+
+class MaterialLata : public Material
+{
+  public:
+    MaterialLata() ;
+};
+
+class MaterialTapasLata : public Material
+{
+  public:
+    MaterialTapasLata() ;
+};
+
+class MaterialPeonMadera : public Material
+{
+  public:
+    MaterialPeonMadera() ;
+};
+
+class MaterialPeonBlanco : public Material
+{
+  public:
+    MaterialPeonBlanco() ;
+};
+
+class MaterialPeonNegro : public Material
+{
+  public:
+    MaterialPeonNegro() ;
 };
 
 #endif

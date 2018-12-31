@@ -129,7 +129,7 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
      }
    }
 
-   // Creamos las texturas
+   // Creamos las texturas/
    if (crear_texturas) {
      // Vector auxiliar para las distancias
      float d[nvp];
@@ -137,7 +137,7 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
      for (unsigned int i = 0; i < nvp - 1; ++i) {
        // Distancia entre los puntos i+1 e i
        float dist = sqrt((perfil_original[i + 1] - perfil_original[i]).lengthSq());
-       d[i + 1] = d[i - 1] + dist;
+       d[i + 1] = d[i] + dist;
      }
      // Añadimos las coordenadas de las texturas
      for (unsigned int i = 0; i < nper; ++i) {
@@ -169,6 +169,8 @@ Cilindro::Cilindro( float r,
     perfil_original.push_back(Tupla3f(r, a * i / (nvp - 1), 0.0));
 
   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+
+  calcular_normales();
 
   // Le da color aleatorio
   fijarColorNodo();
@@ -202,6 +204,8 @@ Esfera::Esfera( float r,
 
   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
 
+  calcular_normales();
+
   // Le da color aleatorio
   fijarColorNodo();
 }
@@ -234,6 +238,8 @@ Cono::Cono( float r,
   }
 
   crearMallaRevol(perfil_original, nperfiles, crear_tapas, cerrar_malla);
+
+  calcular_normales();
 
   // Le da color aleatorio
   fijarColorNodo();

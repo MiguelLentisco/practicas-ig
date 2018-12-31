@@ -30,6 +30,7 @@
 #include "MallaRevol.hpp"
 #include "Objeto3D.hpp"
 
+
 // *********************************************************************
 // declaración adelantada de estructura para un nodo del grafo de escena
 
@@ -230,6 +231,33 @@ class Snowman : public NodoGrafoEscenaParam {
   public:
     Snowman();
 };
+
+
+class CentroLata : public NodoGrafoEscena
+{
+  public:
+    CentroLata();
+};
+
+
+class TapasLata : public NodoGrafoEscena
+{
+  public:
+    TapasLata();
+};
+
+class Lata : public NodoGrafoEscena
+{
+  public:
+    Lata();
+};
+
+class EscenaP4 : public NodoGrafoEscenaParam
+{
+  public:
+    EscenaP4();
+};
+
 
 
 #endif // GRAFO_ESCENA_HPP

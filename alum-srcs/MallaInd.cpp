@@ -52,9 +52,10 @@ void MallaInd::calcular_normales()
     a = q - p;
     b = r - p;
     // El producto vectorial de las caras es el perpendicular
-    v = b.cross(a);
+    v = a.cross(b);
     // Normalizamos
-    v = v.normalized();
+    if (v.lengthSq() != 0)
+      v = v.normalized();
     normalesCaras.push_back(v);
   }
   // Y ahora calculamos las normales de los vertices
@@ -93,19 +94,6 @@ void MallaInd::visualizarBE_MI( ContextoVis & cv ) {
 
 // -----------------------------------------------------------------------------
 
-void MallaInd::visualizarBE_CT( ContextoVis & cv ) {
-  glBegin( GL_TRIANGLES );
-  for (unsigned int i = 0; i < n_triangulos; ++i)
-    for (unsigned int j = 0; j < 3; ++j) {
-      unsigned int ind_ver = tablaTriangulos[i](j);
-      glTexCoord2fv(coordTextura[ind_ver]);
-      glVertex3fv(tablaVertices[ind_ver]);
-    }
-  glEnd();
-}
-
-// -----------------------------------------------------------------------------
-
 void MallaInd::visualizarIluminacionPlana( ContextoVis & cv ) {
   glShadeModel( GL_FLAT );
   glBegin( GL_TRIANGLES );
@@ -114,8 +102,6 @@ void MallaInd::visualizarIluminacionPlana( ContextoVis & cv ) {
       unsigned int ind_ver = tablaTriangulos[i](j);
       if (coordTextura.size() > 0)
         glTexCoord2fv(coordTextura[ind_ver] );
-      if (colVertices.size() > 0)
-        glColor3fv(colVertices[ind_ver] );
       if (normalesCaras.size() > 0)
         glNormal3fv( normalesCaras[ind_ver] );
       glVertex3fv(tablaVertices[ind_ver] );
@@ -128,17 +114,13 @@ void MallaInd::visualizarIluminacionPlana( ContextoVis & cv ) {
 void MallaInd::visualizarIluminacionSuaveDE( ContextoVis & cv ) {
   glShadeModel( GL_SMOOTH );
 
-  if (colVertices.size() > 0 ) {
-    glEnableClientState( GL_COLOR_ARRAY );
-    glColorPointer( 3, GL_FLOAT, 0, colVertices.data() );
-  }
-
   if (normalesVertices.size() > 0) {
     glEnableClientState( GL_NORMAL_ARRAY );
     glNormalPointer( GL_FLOAT, 0, normalesVertices.data() );
   }
 
   if (coordTextura.size() > 0 ) {
+    std::cout << "entro" << std::flush;
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     glTexCoordPointer( 2, GL_FLOAT, 0, coordTextura.data() );
   }
@@ -234,12 +216,18 @@ void MallaInd::visualizarGL( ContextoVis & cv )
       modoVisualizacion = GL_POINT;
       break;
      case modoAlambre:
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
       modoVisualizacion = GL_LINE;
       break;
      case modoSolido:
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
       modoVisualizacion = GL_FILL;
       break;
      default:
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
       modoVisualizacion = GL_FILL;
    }
 
@@ -286,46 +274,6 @@ void MallaInd::colorearEntero(const std::vector<Tupla3f>& colores) {
   colVertices.clear();
   for (unsigned i = 0; i < n_vertices; ++i)
     colVertices.push_back(colores[i]);
-}
-
-
-// *****************************************************************************
-
-// Usar Normales y Coordenadas de Texturas con VBO
-void MallaInd::visualizarVBOs_NT( ContextoVis & cv ) {
-  if (sinVBO)
-    crearVBOs();
-
-  // Activar VBO de coord normales
-  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_nor_ver );
-  glNormalPointer( GL_FLOAT, 0, 0 );
-  glEnableClientState( GL_NORMAL_ARRAY );
-  // Activar VBO de coord textura
-  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_cctt );
-  glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-  visualizarDE_VBOs(cv);
-  // Desactivar punteros a tablas
-  glDisableClientState( GL_NORMAL_ARRAY );
-  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
-
-// **************************************************************************
-
-void MallaInd::visualizarDE_NT( ContextoVis & cv  ) {
-  glVertexPointer( 3, GL_FLOAT, 0, tablaVertices.data() );
-  glTexCoordPointer( 2, GL_FLOAT, 0, coordTextura.data() );
-  glNormalPointer( GL_FLOAT, 0, normalesVertices.data() );
-
-  glEnableClientState( GL_VERTEX_ARRAY );
-  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-  glDrawElements( GL_TRIANGLES, n_triangulos, GL_UNSIGNED_INT, tablaTriangulos.data() );
-
-  glDisableClientState( GL_VERTEX_ARRAY );
-  glDisableClientState( GL_NORMAL_ARRAY );
-  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 
 
