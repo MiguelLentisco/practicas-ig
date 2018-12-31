@@ -106,8 +106,8 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
        n_vertices++;
 
        for (unsigned i = 0; i < nper - 1 + int(cerrar_malla); ++i) {
-         tablaTriangulos.push_back(Tupla3i(nvp * i,
-            nvp * ((i + 1) % nper), n_vertices - 1));
+         tablaTriangulos.push_back(Tupla3i(i * nvp, n_vertices - 1,
+            nvp * ((i + 1) % nper)));
          ++n_triangulos;
        }
      }
