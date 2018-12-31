@@ -84,8 +84,12 @@ void MallaInd::visualizarBE_MI( ContextoVis & cv) {
     for (unsigned int j = 0; j < 3; ++j) {
       unsigned int ind_ver = tablaTriangulos[i](j);
       if (colVertices.size() > 0)
-        glColor3fv(colVertices[ind_ver]);
-      glVertex3fv(tablaVertices[ind_ver]);
+        glColor3fv( colVertices[ind_ver] );
+      if (normalesVertices.size() > 0)
+        glNormal3fv( normalesVertices[ind_ver] );
+      if (coordTextura.size() > 0)
+        glTexCoord2fv( coordTextura[ind_ver] );
+      glVertex3fv( tablaVertices[ind_ver] );
     }
   glEnd();
 }
@@ -109,11 +113,17 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
     glNormalPointer( GL_FLOAT, 0, normalesVertices.data() );
   }
 
+  if (coordTextura.size() > 0) {
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glTexCoordPointer( 2, GL_FLOAT, 0, coordTextura.data() );
+  }
 
   glEnableClientState( GL_VERTEX_ARRAY );
   glVertexPointer( 3, GL_FLOAT, 0, tablaVertices.data() );
   glDrawElements( GL_TRIANGLES, 3 * n_triangulos, GL_UNSIGNED_INT, tablaTriangulos.data() );
+
   glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
   glDisableClientState( GL_NORMAL_ARRAY );
   glDisableClientState( GL_COLOR_ARRAY );
 }
@@ -136,6 +146,12 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
     glEnableClientState( GL_NORMAL_ARRAY );
   }
 
+  if (coordTextura.size() > 0) {
+    glBindBuffer( GL_ARRAY_BUFFER, id_vbo_cctt );
+    glTexCoordPointer( 2, GL_FLOAT, 0, 0);
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+  }
+
   glBindBuffer( GL_ARRAY_BUFFER, id_vbo_ver );
   glVertexPointer( 3, GL_FLOAT, 0, 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0);
@@ -146,6 +162,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
   glDisableClientState( GL_NORMAL_ARRAY );
   glDisableClientState( GL_COLOR_ARRAY );
 }
@@ -242,6 +259,8 @@ void MallaInd::crearVBOs() {
     id_vbo_col = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, colVertices.data() );
   if (normalesVertices.size() > 0)
     id_vbo_normal_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, normalesVertices.data() );
+  if (coordTextura.size() > 0)
+    id_vbo_cctt = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 2L * n_vertices, coordTextura.data() );
   id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, tablaVertices.data() );
   id_vbo_tri = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * 3L * n_triangulos, tablaTriangulos.data() );
   sinVBO = false;
@@ -263,10 +282,10 @@ Cubo::Cubo(float lado, Tupla3f centro) : MallaInd( "malla cubo" )
   for (unsigned int i = 0; i < n_vertices; ++i)
     tablaVertices.push_back(puntos[i] + vectorTraslacion + centro);
   n_triangulos = 12;
-  Tupla3i triangulos[n_triangulos] = { Tupla3i(0, 1, 2), Tupla3i(1, 3, 2),
-    Tupla3i(1, 5, 3), Tupla3i(5, 7, 3), Tupla3i(4, 0, 1), Tupla3i(5, 4, 1),
-    Tupla3i(2, 3, 6), Tupla3i(3, 7, 6), Tupla3i(5, 6, 7), Tupla3i(4, 6, 5),
-    Tupla3i(4, 2, 6), Tupla3i(4, 0, 2) };
+  Tupla3i triangulos[n_triangulos] = { Tupla3i(0, 2, 3), Tupla3i(1, 0, 3),
+    Tupla3i(1, 3, 7), Tupla3i(5, 1, 7), Tupla3i(6, 4, 2), Tupla3i(2, 0, 4),
+    Tupla3i(4, 7, 6), Tupla3i(4, 5, 7), Tupla3i(2, 6, 7), Tupla3i(3, 2, 7),
+    Tupla3i(4, 0, 5), Tupla3i(1, 0, 5) };
   for (unsigned int i = 0; i < n_triangulos; ++i)
     tablaTriangulos.push_back(triangulos[i]);
    fijarColorNodo();
