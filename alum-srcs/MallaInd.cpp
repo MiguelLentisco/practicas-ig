@@ -10,8 +10,6 @@
 #include <stdlib.h>  // rand
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
 
-#define USE_GL_DRAWARRAYS
-
 // *****************************************************************************
 // funciones auxiliares
 
@@ -36,15 +34,46 @@ MallaInd::MallaInd( const std::string & nombreIni )
    n_vertices = n_triangulos = 0;
 }
 
-
 // -----------------------------------------------------------------------------
 // calcula las dos tablas de normales
 
 void MallaInd::calcular_normales()
 {
-   // COMPLETAR: en la práctica 2: calculo de las normales de la malla
-   // .......
-
+  // Primero calculamos las normales de las caras
+   for (unsigned int i = 0; i < n_triangulos; ++i) {
+     Tupla3f p, q, r, a, b, v;
+     // Los vertices de la cara
+     p = tablaVertices[tablaTriangulos[i](0)];
+     q = tablaVertices[tablaTriangulos[i](1)];
+     r = tablaVertices[tablaTriangulos[i](2)];
+     // Tomamos dos lados de la cara
+     a = q - p;
+     b = r - p;
+     // El producto vectorial de las caras es el perpendicular
+     v = a.cross(b);
+     // Normalizamos
+     if (v.lengthSq() != 0)
+       v = v.normalized();
+     normalesCaras.push_back(v);
+   }
+   // Y ahora calculamos las normales de los vertices
+   // Vamos guardando la suma de cada vertice
+   for (unsigned int i = 0; i < n_vertices; ++i)
+     normalesVertices.push_back(Tupla3f(0.0, 0.0, 0.0));
+   // Por cada cara añadimos su normal a la de los vertices de la cara
+   for (unsigned int i = 0; i < n_triangulos; ++i) {
+     Tupla3f norCara = normalesCaras[i];
+     normalesVertices[tablaTriangulos[i](0)] =
+       normalesVertices[tablaTriangulos[i](0)] + norCara;
+     normalesVertices[tablaTriangulos[i](1)] =
+       normalesVertices[tablaTriangulos[i](1)] + norCara;
+     normalesVertices[tablaTriangulos[i](2)] =
+       normalesVertices[tablaTriangulos[i](2)] + norCara;
+   // Normalizamos los vectores
+   for (unsigned int i = 0; i < n_vertices; ++i)
+     if (normalesVertices[i].lengthSq() != 0)
+       normalesVertices[i] = normalesVertices[i].normalized();
+  }
 
 }
 // -----------------------------------------------------------------------------
@@ -75,20 +104,23 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
     glColorPointer( 3, GL_FLOAT, 0, colVertices.data() );
   }
 
+  if (normalesVertices.size() > 0) {
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glNormalPointer( GL_FLOAT, 0, normalesVertices.data() );
+  }
+
 
   glEnableClientState( GL_VERTEX_ARRAY );
-  glVertexPointer( 3, GL_FLOAT, 0, &(tablaVertices[0]) );
+  glVertexPointer( 3, GL_FLOAT, 0, tablaVertices.data() );
   glDrawElements( GL_TRIANGLES, 3 * n_triangulos, GL_UNSIGNED_INT, tablaTriangulos.data() );
   glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_NORMAL_ARRAY );
   glDisableClientState( GL_COLOR_ARRAY );
 }
 
 // ----------------------------------------------------------------------------
 void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 {
-  // COMPLETAR: práctica 1: visualizar en modo diferido,
-  //                        usando VBOs (Vertex Buffer Objects)
-
   if (sinVBO)
     crearVBOs();
 
@@ -96,6 +128,12 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
     glBindBuffer( GL_ARRAY_BUFFER, id_vbo_col );
     glColorPointer( 3, GL_FLOAT, 0, 0 );
     glEnableClientState( GL_COLOR_ARRAY );
+  }
+
+  if (normalesVertices.size() > 0) {
+    glBindBuffer( GL_ARRAY_BUFFER, id_vbo_normal_ver );
+    glNormalPointer( GL_FLOAT, 0, 0 );
+    glEnableClientState( GL_NORMAL_ARRAY );
   }
 
   glBindBuffer( GL_ARRAY_BUFFER, id_vbo_ver );
@@ -108,6 +146,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_NORMAL_ARRAY );
   glDisableClientState( GL_COLOR_ARRAY );
 }
 
@@ -115,41 +154,49 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
 void MallaInd::visualizarGL( ContextoVis & cv )
 {
-   // COMPLETAR: práctica 1: visualizar en modo inmediato o en modo diferido (VBOs),
-   // (tener en cuenta el modo de visualización en 'cv' (alambre, sólido, etc..))
-   //
-
    // Cambiar modo de visualización
    GLenum modoVisualizacion;
+   GLenum modoSombra;
+   int tipoVisualizacion;
 
    switch (cv.modoVis) {
      case modoPuntos:
       modoVisualizacion = GL_POINT;
+      modoSombra = GL_FLAT;
+      tipoVisualizacion = 0;
       break;
      case modoAlambre:
       modoVisualizacion = GL_LINE;
+      modoSombra = GL_FLAT;
+      tipoVisualizacion = 0;
       break;
      case modoSolido:
       modoVisualizacion = GL_FILL;
+      modoSombra = GL_FLAT;
+      tipoVisualizacion = 0;
       break;
      default:
       modoVisualizacion = GL_FILL;
+      modoSombra = GL_FLAT;
+      tipoVisualizacion = 0;
    }
 
   // Cambiar modo de visualización
-  glPolygonMode( GL_FRONT_AND_BACK, modoVisualizacion);
+  glPolygonMode( GL_FRONT_AND_BACK, modoVisualizacion );
+  glShadeModel( GL_SMOOTH );
 
-
-
-   if (cv.usarVBOs)
+  if (cv.usarVBOs)
     visualizarDE_VBOs(cv);
-   else
-    #ifdef USE_GL_DRAWARRAYS
-      visualizarDE_MI(cv);
-    #elif
-      visualizarBE_MI(cv);
-    #endif
-
+  else {
+    switch (tipoVisualizacion) {
+      case 0:
+        visualizarDE_MI( cv );
+        break;
+      case 1:
+        visualizarBE_MI( cv );
+        break;
+    }
+  }
 }
 
 // **************************************************************************
@@ -176,8 +223,6 @@ void MallaInd::colorearEntero(const std::vector<Tupla3f>& colores) {
 }
 
 
-// *****************************************************************************
-
 // **************************************************************************
 
 GLuint VBO_Crear(GLuint tipo, GLuint tamanio, GLvoid * puntero) {
@@ -195,6 +240,8 @@ GLuint VBO_Crear(GLuint tipo, GLuint tamanio, GLvoid * puntero) {
 void MallaInd::crearVBOs() {
   if (colVertices.size() > 0)
     id_vbo_col = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, colVertices.data() );
+  if (normalesVertices.size() > 0)
+    id_vbo_normal_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, normalesVertices.data() );
   id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, sizeof(float) * 3L * n_vertices, tablaVertices.data() );
   id_vbo_tri = VBO_Crear( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * 3L * n_triangulos, tablaTriangulos.data() );
   sinVBO = false;

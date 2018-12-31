@@ -23,12 +23,15 @@ class MallaInd : public Objeto3D
       GLuint id_vbo_ver;
       GLuint id_vbo_tri;
       GLuint id_vbo_col;
+      GLuint id_vbo_normal_ver;
 
       unsigned n_vertices;
       unsigned n_triangulos;
       std::vector<Tupla3f> tablaVertices;
       std::vector<Tupla3i> tablaTriangulos;
       std::vector<Tupla3f> colVertices;
+      std::vector<Tupla3f> normalesCaras;
+      std::vector<Tupla3f> normalesVertices;
 
       // calculo de las normales de esta malla
       void calcular_normales();
