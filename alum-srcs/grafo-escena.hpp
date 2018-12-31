@@ -232,4 +232,32 @@ class Snowman : public NodoGrafoEscenaParam {
 };
 
 
+//**********************************************************************
+
+class CentroLata : public NodoGrafoEscena
+{
+  public:
+    CentroLata();
+};
+
+
+class TapasLata : public NodoGrafoEscena
+{
+  public:
+    TapasLata();
+};
+
+class Lata : public NodoGrafoEscena
+{
+  public:
+    Lata();
+};
+
+class EscenaP4 : public NodoGrafoEscenaParam
+{
+  public:
+    EscenaP4();
+};
+
+
 #endif // GRAFO_ESCENA_HPP

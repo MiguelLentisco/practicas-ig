@@ -82,6 +82,7 @@ EntradaNGE::~EntradaNGE()
 
 void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
 {
+   cv.pilaMateriales.push();
    glMatrixMode( GL_MODELVIEW );
    glPushMatrix();
 
@@ -91,12 +92,13 @@ void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
      else if (entradas[i].tipo == TipoEntNGE::transformacion) {
        glMatrixMode( GL_MODELVIEW );
        glMultMatrixf(*(entradas[i].matriz));
-     }
+     } else if (entradas[i].tipo == TipoEntNGE::material)
+        cv.pilaMateriales.activarMaterial( entradas[i].material );
    }
 
    glMatrixMode( GL_MODELVIEW );
    glPopMatrix();
-
+   cv.pilaMateriales.pop();
 }
 // -----------------------------------------------------------------------------
 
@@ -438,4 +440,35 @@ Snowman::Snowman() {
     [=](float v){return MAT_Traslacion(0, v, 0);}, true, 1.0, 1.0, 0.1, - M_PI / 2);
   parametros.push_back(p8);
 
+}
+
+//**********************************************************************
+
+
+CentroLata::CentroLata()
+{
+  agregar(new MaterialLata());
+  agregar(new MallaRevol("../plys/lata-pcue.ply", 100 , false, false, true));
+}
+
+//**********************************************************************
+
+TapasLata::TapasLata() {
+  agregar(new MaterialTapasLata());
+  agregar(new MallaRevol("../plys/lata-pinf.ply", 100, false, false, true));
+  agregar(new MallaRevol("../plys/lata-psup.ply", 100, false, false, true));
+}
+
+//**********************************************************************
+
+Lata::Lata() {
+  agregar(new TapasLata());
+  agregar(new CentroLata());
+}
+
+//**********************************************************************
+
+EscenaP4::EscenaP4() {
+  ponerNombre("Escena P4");
+  agregar(new Lata());
 }

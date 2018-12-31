@@ -79,8 +79,6 @@ Textura::Textura( const std::string & nombreArchivoJPG )
    imagen = new jpg::Imagen(nombreArchivoJPG);
    enviada = false;
    modo_gen_ct = mgct_desactivada;
-
-
 }
 
 // ---------------------------------------------------------------------
@@ -140,8 +138,7 @@ void Textura::activar(  )
       glTexGenfv( GL_S, GL_EYE_PLANE, coefs_s );
       glTexGenfv( GL_T, GL_EYE_PLANE, coefs_t );
     }
-}
-
+  }
 }
 // *********************************************************************
 
@@ -155,7 +152,7 @@ Material::Material()
 
 Material::Material( const std::string & nombreArchivoJPG )
 {
-   iluminacion    = false ;
+   iluminacion    = true ;
    tex            = new Textura( nombreArchivoJPG ) ;
 
    coloresCero();
@@ -456,7 +453,7 @@ ColFuentesLuz::~ColFuentesLuz()
 //**********************************************************************
 
 FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial )
-: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(0.0, 0.5, 0.0, 1.0)) {}
+: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(1.0, 0.4, 0.0, 1.0)) {}
 
 //----------------------------------------------------------------------
 
@@ -475,13 +472,13 @@ void FuenteDireccional::variarAngulo(unsigned angulo, float incremento)
 //**********************************************************************
 
 FuentePosicional::FuentePosicional( const Tupla3f& posicion )
-  : FuenteLuz(posicion, Tupla4f(0.0, 0.4, 0.0, 1.0)) {}
+  : FuenteLuz(posicion, Tupla4f(0.5, 0.4, 0.0, 1.0)) {}
 
 //**********************************************************************
 
 ColeccionFuentesP4::ColeccionFuentesP4() {
-  insertar(new FuenteDireccional(20, 30));
-  insertar(new FuentePosicional(Tupla3f(3.0, 0.0, 1.0)));
+  insertar(new FuenteDireccional(-20, 30));
+  //insertar(new FuentePosicional(Tupla3f(3.0, 0.0, 1.0)));
 }
 
 //**********************************************************************
@@ -490,7 +487,7 @@ MaterialLata::MaterialLata() : Material("../imgs/lata-coke.jpg") {}
 
 //**********************************************************************
 
-MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.0, 1.0, 1.0, 1.0) {}
+MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.2, 1.0, 1.0, 1.0) {}
 
 //**********************************************************************
 
