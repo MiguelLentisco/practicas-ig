@@ -96,6 +96,27 @@ void MallaInd::visualizarBE_MI( ContextoVis & cv) {
 
 // -----------------------------------------------------------------------------
 
+
+void MallaInd::visualizarBE_TRI( ContextoVis & cv) {
+  glBegin( GL_TRIANGLES );
+  for (unsigned int i = 0; i < n_triangulos; ++i) {
+    if (normalesCaras.size() > 0)
+      glNormal3fv( normalesCaras[i] );
+    for (unsigned int j = 0; j < 3; ++j) {
+      unsigned ind_ver = tablaTriangulos[i](j);
+      if (colVertices.size() > 0)
+        glColor3fv( colVertices[ind_ver] );
+      if (coordTextura.size() > 0)
+        glTexCoord2fv( coordTextura[ind_ver] );
+      glVertex3fv( tablaVertices[ind_ver] );
+    }
+  }
+  glEnd();
+}
+
+
+// -----------------------------------------------------------------------------
+
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
    // COMPLETAR: en la práctica 1: visualizar en modo inmediato (glDrawElements)
@@ -177,32 +198,55 @@ void MallaInd::visualizarGL( ContextoVis & cv )
    int tipoVisualizacion;
 
    switch (cv.modoVis) {
+     case modoSuave:
+      modoVisualizacion = GL_FILL;
+      modoSombra = GL_FLAT;
+      tipoVisualizacion = 2;
+      break;
+
+     case modoPlano:
+      modoVisualizacion = GL_FILL;
+      modoSombra = GL_SMOOTH;
+      tipoVisualizacion = 0;
+      break;
+
      case modoPuntos:
       modoVisualizacion = GL_POINT;
       modoSombra = GL_FLAT;
       tipoVisualizacion = 0;
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
       break;
+
      case modoAlambre:
       modoVisualizacion = GL_LINE;
       modoSombra = GL_FLAT;
       tipoVisualizacion = 0;
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
       break;
+
      case modoSolido:
       modoVisualizacion = GL_FILL;
       modoSombra = GL_FLAT;
       tipoVisualizacion = 0;
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
       break;
+
      default:
       modoVisualizacion = GL_FILL;
       modoSombra = GL_FLAT;
       tipoVisualizacion = 0;
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
    }
 
   // Cambiar modo de visualización
   glPolygonMode( GL_FRONT_AND_BACK, modoVisualizacion );
-  glShadeModel( GL_SMOOTH );
+  glShadeModel( modoSombra );
 
-  if (cv.usarVBOs)
+  if (cv.usarVBOs && cv.modoVis != modoPlano)
     visualizarDE_VBOs(cv);
   else {
     switch (tipoVisualizacion) {
@@ -211,6 +255,9 @@ void MallaInd::visualizarGL( ContextoVis & cv )
         break;
       case 1:
         visualizarBE_MI( cv );
+        break;
+      case 2:
+        visualizarBE_TRI( cv );
         break;
     }
   }

@@ -39,7 +39,7 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
    calcular_normales();
 
    // Le da color aleatorio
-   fijarColorNodo();
+   //fijarColorNodo();
 }
 
 // *****************************************************************************
