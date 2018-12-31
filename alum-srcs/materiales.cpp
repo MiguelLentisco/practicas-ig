@@ -76,8 +76,10 @@ void PilaMateriales::pop(  )
 
 Textura::Textura( const std::string & nombreArchivoJPG )
 {
-   // COMPLETAR: práctica 4: inicializar todas las variables
-   // .....
+   imagen = new jpg::Imagen(nombreArchivoJPG);
+   enviada = false;
+   modo_gen_ct = mgct_desactivada;
+
 
 }
 
@@ -87,9 +89,14 @@ Textura::Textura( const std::string & nombreArchivoJPG )
 
 void Textura::enviar()
 {
-   // COMPLETAR: práctica 4: enviar la imagen de textura a la GPU
-   // .......
-
+  assert( imagen != NULL );
+  glGenTextures( 1, &ident_textura );
+  glBindTexture( GL_TEXTURE_2D, ident_textura );
+  unsigned int ancho = imagen->tamX();
+  unsigned int alto = imagen->tamY();
+  unsigned char * texels = imagen->leerPixels();
+  gluBuild2DMipmaps( GL_TEXTURE_2D, GL_RGB, ancho, alto, GL_RGB, GL_UNSIGNED_BYTE, texels);
+  enviada = true;
 }
 
 //----------------------------------------------------------------------
@@ -110,8 +117,29 @@ Textura::~Textura( )
 
 void Textura::activar(  )
 {
-   // COMPLETAR: práctica 4: enviar la textura a la GPU (solo la primera vez) y activarla
-   // .......
+  glEnable( GL_TEXTURE_2D );
+  if (!enviada)
+    enviar();
+  glBindTexture( GL_TEXTURE_2D, ident_textura );
+
+  if (modo_gen_ct == mgct_desactivada) {
+    glDisable( GL_TEXTURE_GEN_S );
+    glDisable( GL_TEXTURE_GEN_T );
+  } else {
+    glEnable( GL_TEXTURE_GEN_S );
+    glEnable( GL_TEXTURE_GEN_T );
+    if (modo_gen_ct == mgct_coords_objeto) {
+      glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+      glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+      glTexGenfv( GL_S, GL_OBJECT_PLANE, coefs_s );
+      glTexGenfv( GL_T, GL_OBJECT_PLANE, coefs_t );
+    } else if (modo_gen_ct == mgct_coords_ojo) {
+      glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR );
+      glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR );
+      glTexGenfv( GL_S, GL_EYE_PLANE, coefs_s );
+      glTexGenfv( GL_T, GL_EYE_PLANE, coefs_t );
+    }
+}
 
 }
 // *********************************************************************
@@ -311,7 +339,7 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
    vpf.push_back( pf ) ;
 }
 //----------------------------------------------------------------------
-// activa una colección de fuentes de luz 
+// activa una colección de fuentes de luz
 
 void ColFuentesLuz::activar( unsigned id_prog )
 {

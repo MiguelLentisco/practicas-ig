@@ -255,4 +255,60 @@ class ColFuentesLuz
    std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes
    GLint max_num_fuentes ;
 } ;
+
+//**********************************************************************
+
+class FuenteDireccional : public FuenteLuz
+{
+  public:
+    FuenteDireccional(float alpha_inicial, float beta_inicial);
+
+    // 0 -> alpha, 1 -> beta
+    void variarAngulo( unsigned int angulo, float incremento);
+};
+
+class FuentePosicional : public FuenteLuz
+{
+  public:
+    FuentePosicional(const Tupla3f& posicion);
+};
+
+class ColeccionesFuentesP4 : public ColFuentesLuz
+{
+  public:
+      ColeccionesFuentesP4();
+};
+
+//**********************************************************************
+
+class MaterialLata : public Material
+{
+  public:
+    MaterialLata();
+};
+
+class MaterialTapasLata : public Material
+{
+  public:
+    MaterialTapasLata();
+};
+
+class MaterialPeonMadera : public Material
+{
+  public:
+    MaterialPeonMadera();
+};
+
+class MaterialPeonBlanco : public Material
+{
+  public:
+    MaterialPeonBlanco();
+};
+
+class MaterialPeonNegro : public Material
+{
+  public:
+    MaterialPeonNegro();
+};
+
 #endif
