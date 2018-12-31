@@ -120,7 +120,8 @@ void Textura::activar(  )
   glEnable( GL_TEXTURE_2D );
   if (!enviada)
     enviar();
-  glBindTexture( GL_TEXTURE_2D, ident_textura );
+  else
+    glBindTexture( GL_TEXTURE_2D, ident_textura );
 
   if (modo_gen_ct == mgct_desactivada) {
     glDisable( GL_TEXTURE_GEN_S );
@@ -178,8 +179,14 @@ Material::Material( const std::string & nombreArchivoJPG )
 Material::Material( Textura * text, float ka, float kd, float ks, float exp )
 :  Material()
 {
-   // COMPLETAR: práctica 4: inicializar material usando text,ka,kd,ks,exp
-   // .....
+   tex = text;
+   iluminacion = true;
+   coloresCero();
+
+   del.ambiente = tra.ambiente = VectorRGB(ka, ka, ka, 1.0);
+   del.difusa = tra.difusa = VectorRGB(kd, kd, kd, 1.0);
+   del.especular = tra.especular = VectorRGB(ks, ks, ks, 1.0);
+   del.exp_brillo = tra.exp_brillo = exp;
 
    ponerNombre("material con textura e iluminación") ;
 
@@ -190,8 +197,16 @@ Material::Material( Textura * text, float ka, float kd, float ks, float exp )
 // en el lugar de textura (textura == NULL)
 Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, float exp )
 {
-   // COMPLETAR: práctica 4: inicializar material usando colorAmbDif,ka,kd,ks,exp
-   // .....
+   tex = NULL;
+   iluminacion = true;
+   coloresCero();
+
+   VectorRGB colorRGB = VectorRGB(colorAmbDif(0), colorAmbDif(1), colorAmbDif(2), 1.0);
+
+   del.ambiente = tra.ambiente = colorRGB;
+   del.difusa = tra.difusa = colorRGB;
+
+   // TODO: Falta aqui?
 
    ponerNombre("material color plano, ilum.") ;
 }
@@ -199,9 +214,12 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
 
 Material::Material( const float r, const float g, const float b )
 {
-   // COMPLETAR: práctica 4: inicializar material usando un color plano sin iluminación
-   // .....
+  tex = NULL;
+  iluminacion = false,
+  coloresCero();
 
+  color = VectorRGB(r, g, b, 1.0);
+  ponerNombre("material color plano, no ilum.");
 }
 
 //----------------------------------------------------------------------
@@ -250,8 +268,31 @@ std::string Material::nombre() const
 
 void Material::activar(  )
 {
-   // COMPLETAR: práctica 4: activar un material
-   // .....
+  if (iluminacion) {
+    glEnable( GL_LIGHTING );
+    glMaterialfv( GL_FRONT, GL_EMISSION, del.emision );
+    glMaterialfv( GL_FRONT, GL_AMBIENT, del.ambiente );
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, del.difusa );
+    glMaterialfv( GL_FRONT, GL_SPECULAR, del.especular );
+    glMaterialf( GL_FRONT, GL_SHININESS, del.exp_brillo );
+    glMaterialfv( GL_BACK, GL_EMISSION, tra.emision );
+    glMaterialfv( GL_BACK, GL_AMBIENT, tra.ambiente );
+    glMaterialfv( GL_BACK, GL_DIFFUSE, tra.difusa );
+    glMaterialfv( GL_BACK, GL_SPECULAR, tra.especular );
+    glMaterialf( GL_BACK, GL_SHININESS, tra.exp_brillo );
+  } else {
+    glDisable( GL_LIGHTING );
+    glColor4fv( color );
+    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+    glColorMaterial( GL_FRONT_AND_BACK, GL_EMISSION );
+    glColorMaterial( GL_FRONT_AND_BACK, GL_SPECULAR );
+  }
+
+  if (tex != NULL)
+    tex->activar();
+  else
+    glDisable( GL_TEXTURE_2D );
+
 
 }
 
