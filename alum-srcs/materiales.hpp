@@ -207,6 +207,8 @@ class FuenteLuz
    // p_color     == color de la fuente de luz (amb, dif y spec )
    FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB & p_color ) ;
 
+   FuenteLuz( const Tupla3f& posicion, const VectorRGB & p_color );
+
    // cambia el estado de OpenGL de forma que a partir de la llamada
    // se usará esta fuente de luz en los calculos del MIL
    // (en cada momento puede haber varias fuentes activadas)
@@ -223,6 +225,8 @@ public:
     float
       longi,      // longitud actual de la fuente direccional (en grados, entre 0 y 360)
       lati ;      // latitud actual de la fuente direccional (en grados, entre -90 y 90)
+    Tupla3f
+      pos;        // Posición de la fuente posicional
 protected:
    VectorRGB
       col_ambiente,  // color de la fuente para la componente ambiental
@@ -231,8 +235,10 @@ protected:
    GLenum
       ind_fuente ;// indice de la fuente de luz en el vector, se asigna al insertarlo
    float
-      longi_ini,  // valor inicial de 'longi'
-      lati_ini ;  // valor inicial de 'lati'
+      longi_ini,  // valor inicial de 'longi' aka alpha
+      lati_ini ;  // valor inicial de 'lati' aka beta
+   bool
+      esDireccional; // si es direccional
 
    friend class ColFuentesLuz ;
 } ;
@@ -253,7 +259,7 @@ class ColFuentesLuz
 
    private:
    std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes
-   GLint max_num_fuentes ;
+   GLenum max_num_fuentes ;
 } ;
 
 //**********************************************************************
@@ -273,10 +279,10 @@ class FuentePosicional : public FuenteLuz
     FuentePosicional(const Tupla3f& posicion);
 };
 
-class ColeccionesFuentesP4 : public ColFuentesLuz
+class ColeccionFuentesP4 : public ColFuentesLuz
 {
   public:
-      ColeccionesFuentesP4();
+      ColeccionFuentesP4();
 };
 
 //**********************************************************************

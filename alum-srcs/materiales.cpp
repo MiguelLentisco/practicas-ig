@@ -315,6 +315,31 @@ FuenteLuz::FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB &
    col_difuso    = p_color ;
    col_especular = p_color ;
 
+   esDireccional = true;
+
+   ind_fuente = -1 ; // la marca como no activable hasta que no se le asigne indice
+
+   //CError();
+}
+
+//----------------------------------------------------------------------
+
+FuenteLuz::FuenteLuz( const Tupla3f& posicion, const VectorRGB & p_color )
+{
+   //CError();
+
+   if ( trazam )
+      cout << "creando fuente de luz." <<  endl << flush ;
+
+   // inicializar parámetros de la fuente de luz
+   pos = posicion;
+
+   col_ambiente  = p_color ;
+   col_difuso    = p_color ;
+   col_especular = p_color ;
+
+   esDireccional = false;
+
    ind_fuente = -1 ; // la marca como no activable hasta que no se le asigne indice
 
    //CError();
@@ -324,9 +349,26 @@ FuenteLuz::FuenteLuz( GLfloat p_longi_ini, GLfloat p_lati_ini, const VectorRGB &
 
 void FuenteLuz::activar()
 {
-   // COMPLETAR: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
-   // .....
+  assert( ind_fuente >= 0 && ind_fuente < 8 );
+  glEnable( GL_LIGHT0 + ind_fuente );
+  // Configuramos los colores
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_AMBIENT, col_ambiente);
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_DIFFUSE, col_difuso);
+  glLightfv (GL_LIGHT0 + ind_fuente, GL_SPECULAR, col_especular);
 
+  if (esDireccional) {
+    const GLfloat ejeZ[4] = {0.0, 0.0, 1.0, 0.0};
+    glMatrixMode( GL_MODELVIEW );
+    glPushMatrix();
+    glLoadIdentity();
+    glRotatef( longi, 0.0, 1.0, 0.0 );
+    glRotatef( lati, -1.0, 0.0, 0.0);
+    glLightfv( GL_LIGHT0 + ind_fuente, GL_POSITION, ejeZ );
+    glPopMatrix();
+  } else {
+    const GLfloat posf[4] = { pos(0), pos(1), pos(2), 1.0 };
+    glLightfv( GL_LIGHT0 + ind_fuente, GL_POSITION, posf );
+  }
 }
 
 //----------------------------------------------------------------------
@@ -336,28 +378,31 @@ bool FuenteLuz::gestionarEventoTeclaEspecial( int key )
    bool actualizar = true ;
    const float incr = 3.0f ;
 
-   switch( key )
-   {
-      case GLFW_KEY_RIGHT:
-         longi = longi+incr ;
-         break ;
-      case GLFW_KEY_LEFT:
-         longi = longi-incr ;
-         break ;
-      case GLFW_KEY_UP:
-         lati = std::min( lati+incr, 90.0f) ;
-         break ;
-      case GLFW_KEY_DOWN:
-         lati = std::max( lati-incr, -90.0f ) ;
-         break ;
-      case GLFW_KEY_HOME:
-         lati  = lati_ini ;
-         longi = longi_ini ;
-         break ;
-      default :
-         actualizar = false ;
-         cout << "tecla no usable para la fuente de luz." << endl << flush ;
-   }
+   if (esDireccional) {
+     switch( key )
+     {
+        case GLFW_KEY_RIGHT:
+           longi = longi+incr ;
+           break ;
+        case GLFW_KEY_LEFT:
+           longi = longi-incr ;
+           break ;
+        case GLFW_KEY_UP:
+           lati = std::min( lati+incr, 90.0f) ;
+           break ;
+        case GLFW_KEY_DOWN:
+           lati = std::max( lati-incr, -90.0f ) ;
+           break ;
+        case GLFW_KEY_HOME:
+           lati  = lati_ini ;
+           longi = longi_ini ;
+           break ;
+        default :
+           actualizar = false ;
+           cout << "tecla no usable para la fuente de luz." << endl << flush ;
+     }
+   } else
+    actualizar = false;
 
    //if ( actualizar )
    //   cout << "fuente de luz cambiada: longi == " << longi << ", lati == " << lati << endl << flush ;
@@ -368,7 +413,7 @@ bool FuenteLuz::gestionarEventoTeclaEspecial( int key )
 
 ColFuentesLuz::ColFuentesLuz()
 {
-   max_num_fuentes = -1 ;
+   max_num_fuentes = 8 ;
 }
 //----------------------------------------------------------------------
 
@@ -384,10 +429,13 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 
 void ColFuentesLuz::activar( unsigned id_prog )
 {
-   // COMPLETAR: práctica 4: activar una colección de fuentes de luz
-   // .....
-
+  glEnable( GL_LIGHTING );
+  for (unsigned int i = 0; i < vpf.size(); ++i)
+    vpf[i]->activar();
+  for (unsigned int i = vpf.size(); i < max_num_fuentes; ++i)
+    glDisable(GL_LIGHT0 + i);
 }
+
 //----------------------------------------------------------------------
 FuenteLuz * ColFuentesLuz::ptrFuente( unsigned i )
 {
@@ -404,3 +452,54 @@ ColFuentesLuz::~ColFuentesLuz()
       vpf[i] = NULL ;
    }
 }
+
+//**********************************************************************
+
+FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial )
+: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(0.0, 0.5, 0.0, 1.0)) {}
+
+//----------------------------------------------------------------------
+
+void FuenteDireccional::variarAngulo(unsigned angulo, float incremento)
+{
+  switch (angulo) {
+    case 0:
+      longi = longi + incremento;
+      break;
+    case 1:
+      lati = std::min(lati + incremento, 90.0f);
+      break;
+  }
+}
+
+//**********************************************************************
+
+FuentePosicional::FuentePosicional( const Tupla3f& posicion )
+  : FuenteLuz(posicion, Tupla4f(0.0, 0.4, 0.0, 1.0)) {}
+
+//**********************************************************************
+
+ColeccionFuentesP4::ColeccionFuentesP4() {
+  insertar(new FuenteDireccional(20, 30));
+  insertar(new FuentePosicional(Tupla3f(3.0, 0.0, 1.0)));
+}
+
+//**********************************************************************
+
+MaterialLata::MaterialLata() : Material("../imgs/lata-coke.jpg") {}
+
+//**********************************************************************
+
+MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.0, 1.0, 1.0, 1.0) {}
+
+//**********************************************************************
+
+MaterialPeonMadera::MaterialPeonMadera() : Material("../imgs/text-madera,jpg") {}
+
+//**********************************************************************
+
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.2, 1.0, 0.1, 0.1) {}
+
+//**********************************************************************
+
+MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.4, 0.1, 1.0, 1.0) {}
