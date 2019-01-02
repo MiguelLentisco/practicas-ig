@@ -216,6 +216,8 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
 
    del.ambiente = tra.ambiente = colorRGB;
    del.difusa = tra.difusa = colorRGB;
+   del.especular = tra.especular = VectorRGB(ks, ks, ks, 1.0);
+   del.exp_brillo = tra.exp_brillo = exp;
 
    // TODO: Falta aqui?
 
@@ -473,6 +475,7 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 void ColFuentesLuz::activar( unsigned id_prog )
 {
   glEnable( GL_LIGHTING );
+  glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
   for (unsigned int i = 0; i < vpf.size(); ++i)
     vpf[i]->activar();
   for (unsigned int i = vpf.size(); i < max_num_fuentes; ++i)

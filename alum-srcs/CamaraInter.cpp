@@ -110,13 +110,20 @@ void CamaraInteractiva::moverHV( float nh, float nv )
    {
       // COMPLETAR: práctica 5: actualizar 'longi' y 'lati' y recalcular marco de cámara
       // .....
+      longi += nh * urot;
+      lati += nv * urot;
+      calcularMarcoCamara();
+
 
    }
    else // primer persona
    {
       // COMPLETAR: práctica 5: desplazar 'mcv.org' en X e Y y recalcular la matriz de vista
       // (y movimiento solidario del punto de atención)
-      // .....
+
+      mcv.org(0) += nh * udesp;
+      mcv.org(1) += nv * udesp;
+      recalcularMatrMCV();
 
    }
 }
@@ -134,13 +141,16 @@ void CamaraInteractiva::desplaZ( float nz )
    {
       // COMPLETAR: práctica 5: actualizar 'dist' usando 'nz', 'dmin' y 'porc' y recalcular marco de cámara
       // .....
+      dist = dmin + (dist - dmin) * (1.0 - nz * porc / 100.0 );
+      calcularMarcoCamara();
 
    }
    else // primer persona
    {
       // COMPLETAR: práctica 5: desplazar 'mcv.org' en Z, y recalcular la matriz de vista
       // (y movimiento solidario del punto de atención)
-      // .....
+      mcv.org(2) += nz * udesp;
+      recalcularMatrMCV();
 
    }
 
