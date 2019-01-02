@@ -82,7 +82,16 @@ void CamaraInteractiva::calcularMarcoCamara()
    //    (3) recalcular matrices marco camara
    // .....
 
-
+   // ????
+   Matriz4f matriz = MAT_Traslacion(aten) * MAT_Rotacion(longi, 0.0, 1.0, 0.0)
+    * MAT_Rotacion(-lati, 1.0, 0.0, 0.0) * MAT_Traslacion(0.0, 0.0, dist);
+   Matriz4f mEjes = MAT_Filas(mcv.eje);
+   mEjes(3, 3) = 1.0;
+   Matriz4f ejesCambiados = mEjes * matriz;
+   for (unsigned i = 0; i < 3; ++i)
+    for (unsigned j = 0; j < 3; ++j)
+      mcv.eje[i](j) = ejesCambiados(i, j);
+   recalcularMatrMCV();
 }
 
 
@@ -94,6 +103,8 @@ void CamaraInteractiva::recalcularMatrMCV()
 {
    // COMPLETAR: práctica 5: recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv' en 'mcv' usando 'mcv.eje[X/Y/Z]' y 'mcv.org'
    // .....
+   mcv.matrizVista = MAT_Vista( mcv.eje, mcv.org ) ;
+   mcv.matrizVistaInv = MAT_Vista_inv( mcv.eje, mcv.org );
 
 }
 
@@ -174,6 +185,8 @@ void CamaraInteractiva::modoExaminar( const Tupla3f & pAten )
 {
    // COMPLETAR: práctica 5: fija punt. aten. y activa modo examinar, recalcula marco de camara
    // .....
+   aten = pAten;
+   calcularMarcoCamara();
 
 }
 // -----------------------------------------------------------------------------
@@ -183,6 +196,7 @@ void CamaraInteractiva::modoExaminar()
 {
    // COMPLETAR: práctica 5: activa modo examinar (no es necesario recalcular el marco de cámara)
    // .....
+   examinar = true;
 
 }
 // -----------------------------------------------------------------------------
@@ -192,5 +206,6 @@ void CamaraInteractiva::modoPrimeraPersona()
 {
    // COMPLETAR: práctica 5: activa modo primera persona (no es necesario recalcular el marco de cámara)
    // .....
+   examinar = false;
 
 }
