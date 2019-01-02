@@ -455,7 +455,8 @@ CentroLata::CentroLata()
 
 //**********************************************************************
 
-TapasLata::TapasLata() {
+TapasLata::TapasLata()
+{
   agregar(new MaterialTapasLata());
   float colorPlata = (1.0 / 255) * 192;
   Tupla3f plata = Tupla3f(colorPlata, colorPlata, colorPlata);
@@ -469,14 +470,49 @@ TapasLata::TapasLata() {
 
 //**********************************************************************
 
-Lata::Lata() {
+Lata::Lata()
+{
   agregar(new TapasLata());
   agregar(new CentroLata());
 }
 
 //**********************************************************************
 
-EscenaP4::EscenaP4() {
+PeonMadera::PeonMadera()
+{
+  agregar(new MaterialPeonMadera());
+  agregar(new MallaRevol("../plys/peon.ply", 100, true, false, false));
+}
+
+
+//**********************************************************************
+
+PeonBlanco::PeonBlanco()
+{
+  agregar(new MaterialPeonBlanco());
+  agregar(new MallaRevol("../plys/peon.ply", 100, true, false, true));
+}
+
+
+//**********************************************************************
+
+PeonNegro::PeonNegro()
+{
+  agregar(new MaterialPeonNegro());
+  agregar(new MallaRevol("../plys/peon.ply", 100, true, false, true));
+}
+
+//**********************************************************************
+
+EscenaP4::EscenaP4()
+{
   ponerNombre("Escena P4");
   agregar(new Lata());
+  agregar(MAT_Escalado(0.2, 0.2, 0.2));
+  agregar(MAT_Traslacion(0.0, 1.0, 4.0));
+  agregar(new PeonMadera());
+  agregar(MAT_Traslacion(3.0, 0.0, 0.0));
+  agregar(new PeonBlanco());
+  agregar(MAT_Traslacion(3.0, 0.0, 0.0));
+  agregar(new PeonNegro());
 }

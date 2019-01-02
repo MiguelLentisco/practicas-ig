@@ -253,6 +253,28 @@ class Lata : public NodoGrafoEscena
     Lata();
 };
 
+//**********************************************************************
+
+class PeonMadera : public NodoGrafoEscena
+{
+  public:
+    PeonMadera();
+};
+
+class PeonBlanco : public NodoGrafoEscena
+{
+  public:
+    PeonBlanco();
+};
+
+class PeonNegro : public NodoGrafoEscena
+{
+  public:
+    PeonNegro();
+};
+
+//**********************************************************************
+
 class EscenaP4 : public NodoGrafoEscenaParam
 {
   public:

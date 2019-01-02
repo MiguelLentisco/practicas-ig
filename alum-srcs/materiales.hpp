@@ -130,7 +130,8 @@ class Textura
 
 class TexturaXY : public Textura
 {
-   public: TexturaXY( const std::string & nom );
+   public:
+     TexturaXY( const std::string & nom );
 } ;
 
 // *********************************************************************

@@ -140,6 +140,20 @@ void Textura::activar(  )
     }
   }
 }
+
+
+// *********************************************************************
+
+TexturaXY::TexturaXY( const string & nom ) : Textura(nom)
+{
+  modo_gen_ct = mgct_coords_objeto;
+  coefs_s[1] = 1.0;
+  coefs_s[0] = coefs_s[2] = coefs_s[3] = 0.0;
+  coefs_t[0] = 1.0;
+  coefs_s[1] = coefs_s[2] = coefs_s[3] = 0.0;
+}
+
+
 // *********************************************************************
 
 Material::Material()
@@ -444,7 +458,7 @@ ColFuentesLuz::ColFuentesLuz()
 {
    max_num_fuentes = 8 ;
 }
-//----------------------------------------------------------------------
+//--------------------------------------d --------------------------------
 
 void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 {
@@ -504,7 +518,7 @@ FuentePosicional::FuentePosicional( const Tupla3f& posicion )
 
 ColeccionFuentesP4::ColeccionFuentesP4() {
   insertar(new FuenteDireccional(-20, 30));
-  //insertar(new FuentePosicional(Tupla3f(3.0, 0.0, 1.0)));
+  insertar(new FuentePosicional(Tupla3f(10.0, 10.0, 10.0)));
 }
 
 //**********************************************************************
@@ -522,12 +536,15 @@ MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.0, 0.4, 0.3, 1.0) {}
 
 //**********************************************************************
 
-MaterialPeonMadera::MaterialPeonMadera() : Material("../imgs/text-madera,jpg") {}
+MaterialPeonMadera::MaterialPeonMadera() :
+ Material(new TexturaXY("../imgs/text-madera.jpg"), 0.4, 0.2, 10.0, 2.0)
+{
+}
 
 //**********************************************************************
 
-MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.2, 1.0, 0.1, 0.1) {}
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.0, 1.0, 0.0, 0.0) {}
 
 //**********************************************************************
 
-MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.4, 0.1, 1.0, 1.0) {}
+MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.0, 0.0, 1.0, 0.0) {}

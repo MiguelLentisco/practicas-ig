@@ -28,7 +28,7 @@ static Snowman * snowman = NULL;
 
 void P3_Inicializar(  )
 {
-   cout << "práctica 3: creando objetos de la práctica 3 .... " << flush ;
+   cout << "Creando objetos de la práctica 3 .... " << flush ;
     objetos3[0] = snowman = new Snowman;
    cout << "hecho." << endl << flush ;
 }
