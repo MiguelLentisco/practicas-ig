@@ -19,6 +19,11 @@ using namespace std ;
 //      que sirven para gestionar el modo arrastrar)
 // ......
 
+static unsigned camaraActiva = 0 ;
+static constexpr int numCamaras = 1;
+static CamaraInteractiva * camaras[numCamaras] = { nullptr };
+static CamaraInteractiva * camara = NULL;
+
 // viewport actual (se recalcula al inicializar y al fijar las matrices)
 Viewport viewport ;
 // true si se está en modo arrastrar, false si no
@@ -32,6 +37,8 @@ void P5_Inicializar(  int vp_ancho, int vp_alto )
    cout << "Creando objetos de la práctica 5 .... " << flush ;
    // COMPLETAR: práctica 5: inicializar las variables de la práctica 5 (incluyendo el viewport)
    // .......
+   //P5_FijarMVPOpenGL(vp_ancho, vp_alto);
+   //camaras[0] = camara = new CamaraInteractiva();
 
    cout << "hecho." << endl << flush ;
 }
@@ -42,8 +49,15 @@ void P5_FijarMVPOpenGL( int vp_ancho, int vp_alto )
    // COMPLETAR: práctica 5: actualizar viewport, actualizar y activar la camara actual
    //     (en base a las dimensiones del viewport)
    // .......
+   viewport.ancho = vp_ancho;
+   viewport.alto = vp_alto;
+   viewport.ratio_yx = float(viewport.alto) / float(viewport.ancho) ;
+   viewport.matrizVp    = MAT_Viewport( viewport.org_x, viewport.org_y, viewport.ancho, viewport.alto );
+   viewport.matrizVpInv = MAT_Viewport_inv( viewport.org_x, viewport.org_y, viewport.ancho, viewport.alto );
 
-
+   camaras[camaraActiva]->ratio_yx_vp = 1.0 * vp_alto / vp_ancho;
+   camaras[camaraActiva]->calcularViewfrustum();
+   camaras[camaraActiva]->activar();
 }
 // ---------------------------------------------------------------------
 

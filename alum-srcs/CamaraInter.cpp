@@ -52,13 +52,18 @@ void CamaraInteractiva::calcularViewfrustum(  )
       // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
       // caso perspectiva: usar hfov_grad, n, ratio_yx_vp, dist, función MAT_Frustum
       // .....
+      vf = ViewFrustum(hfov_grad, ratio_yx_vp, n, dist);
 
    }
    else
    {
       // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
       // caso ortográfica: usar ratio_yx_vp, dist, función MAT_Ortografica
-      // .....
+      vf.persp = false;
+      vf.right = vf.top * ratio_yx_vp;
+      vf.left = -vf.left;
+      vf.far = dist;
+      vf.matrizProy = MAT_Ortografica( vf.left, vf.right, vf.bottom, vf.top, vf.near, vf.far );
 
    }
 

@@ -475,7 +475,7 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 void ColFuentesLuz::activar( unsigned id_prog )
 {
   glEnable( GL_LIGHTING );
-  glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
+  //glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
   for (unsigned int i = 0; i < vpf.size(); ++i)
     vpf[i]->activar();
   for (unsigned int i = vpf.size(); i < max_num_fuentes; ++i)
@@ -510,7 +510,7 @@ unsigned ColFuentesLuz::size() {
 //**********************************************************************
 
 FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial )
-: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(1.0, 1.0, 1.0, 1.0)) {}
+: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(0.9, 0.9, 0.9, 1.0)) {}
 
 //**********************************************************************
 
@@ -520,8 +520,8 @@ FuentePosicional::FuentePosicional( const Tupla3f& posicion )
 //**********************************************************************
 
 ColeccionFuentesP4::ColeccionFuentesP4() {
-  insertar(new FuenteDireccional(-20, 30));
-  insertar(new FuentePosicional(Tupla3f(10.0, 10.0, 10.0)));
+  insertar(new FuenteDireccional(0, 0));
+  //insertar(new FuentePosicional(Tupla3f(1.0, 1.0, 0.0)));
 }
 
 //**********************************************************************
@@ -529,25 +529,30 @@ ColeccionFuentesP4::ColeccionFuentesP4() {
 MaterialLata::MaterialLata() : Material("../imgs/lata-coke.jpg")
 {
   coloresCero();
+  del.ambiente = tra.ambiente = VectorRGB(0.3, 0.3, 0.3, 1.0);
   del.difusa = tra.difusa = VectorRGB(0.7, 0.7, 0.7, 1.0);
   del.especular = tra.especular = VectorRGB(0.5, 0.5, 0.5, 1.0);
+  del.exp_brillo = tra.exp_brillo = 5.0;
 }
 
 //**********************************************************************
 
-MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.0, 0.4, 0.3, 1.0) {}
+MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.3, 169.0 / 255.0, 0.0, 1.0) {}
 
 //**********************************************************************
 
 MaterialPeonMadera::MaterialPeonMadera() :
- Material(new TexturaXY("../imgs/text-madera.jpg"), 0.4, 0.2, 10.0, 2.0)
+ Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 1.0, 0.2, 0.2)
 {
 }
 
 //**********************************************************************
 
-MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.0, 1.0, 0.0, 0.0) {}
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.5, 0.1, 0.7, 5.0)
+{
+//  del.ambiental = tra.ambiental = VectorRGB(1.0, 1.0, 1.0, 1.0);
+}
 
 //**********************************************************************
 
-MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.0, 0.0, 1.0, 0.0) {}
+MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.03, 0.04, 0.0, 0.0) {}
