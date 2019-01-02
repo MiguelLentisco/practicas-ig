@@ -406,6 +406,38 @@ bool FuenteLuz::gestionarEventoTeclaEspecial( int key )
    return actualizar ;
 }
 
+//----------------------------------------------------------------------
+
+bool FuenteLuz::esDir() {
+  return esDireccional;
+}
+
+float FuenteLuz::getAngulo(unsigned int angulo) {
+  assert(esDireccional);
+  return (angulo == 1 ? lati : longi);
+}
+
+void FuenteLuz::variarAngulo(unsigned angulo, float incremento)
+{
+  assert(esDireccional);
+  switch (angulo) {
+    case 0:
+      longi = longi + incremento;
+      if (longi > 360.0)
+        longi -= 360;
+      else if (longi < -360.0)
+        longi += 360;
+      break;
+    case 1:
+      lati = lati + incremento;
+      if (lati > 90.0)
+        lati = 90.0;
+      else if (lati < -90.0)
+        lati = -90.0;
+      break;
+  }
+}
+
 //**********************************************************************
 
 ColFuentesLuz::ColFuentesLuz()
@@ -439,6 +471,8 @@ FuenteLuz * ColFuentesLuz::ptrFuente( unsigned i )
    assert(i < vpf.size()) ;
    return vpf[i] ;
 }
+
+
 //----------------------------------------------------------------------
 ColFuentesLuz::~ColFuentesLuz()
 {
@@ -450,29 +484,21 @@ ColFuentesLuz::~ColFuentesLuz()
    }
 }
 
-//**********************************************************************
-
-FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial )
-: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(1.0, 0.4, 0.0, 1.0)) {}
-
 //----------------------------------------------------------------------
 
-void FuenteDireccional::variarAngulo(unsigned angulo, float incremento)
-{
-  switch (angulo) {
-    case 0:
-      longi = longi + incremento;
-      break;
-    case 1:
-      lati = std::min(lati + incremento, 90.0f);
-      break;
-  }
+unsigned ColFuentesLuz::size() {
+  return vpf.size();
 }
 
 //**********************************************************************
 
+FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial )
+: FuenteLuz(alpha_inicial, beta_inicial, Tupla4f(1.0, 1.0, 1.0, 1.0)) {}
+
+//**********************************************************************
+
 FuentePosicional::FuentePosicional( const Tupla3f& posicion )
-  : FuenteLuz(posicion, Tupla4f(0.5, 0.4, 0.0, 1.0)) {}
+  : FuenteLuz(posicion, Tupla4f(1.0, 1.0, 1.0, 1.0)) {}
 
 //**********************************************************************
 
@@ -483,11 +509,16 @@ ColeccionFuentesP4::ColeccionFuentesP4() {
 
 //**********************************************************************
 
-MaterialLata::MaterialLata() : Material("../imgs/lata-coke.jpg") {}
+MaterialLata::MaterialLata() : Material("../imgs/lata-coke.jpg")
+{
+  coloresCero();
+  del.difusa = tra.difusa = VectorRGB(0.7, 0.7, 0.7, 1.0);
+  del.especular = tra.especular = VectorRGB(0.5, 0.5, 0.5, 1.0);
+}
 
 //**********************************************************************
 
-MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.2, 1.0, 1.0, 1.0) {}
+MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.0, 0.4, 0.3, 1.0) {}
 
 //**********************************************************************
 

@@ -448,15 +448,23 @@ Snowman::Snowman() {
 CentroLata::CentroLata()
 {
   agregar(new MaterialLata());
-  agregar(new MallaRevol("../plys/lata-pcue.ply", 100 , false, false, true));
+  MallaRevol* centro = new MallaRevol("../plys/lata-pcue.ply", 100 , false, false, true);
+  centro->fijarColorNodo(Tupla3f(1.0, 0.0, 0.0));
+  agregar(centro);
 }
 
 //**********************************************************************
 
 TapasLata::TapasLata() {
   agregar(new MaterialTapasLata());
-  agregar(new MallaRevol("../plys/lata-pinf.ply", 100, false, false, true));
-  agregar(new MallaRevol("../plys/lata-psup.ply", 100, false, false, true));
+  float colorPlata = (1.0 / 255) * 192;
+  Tupla3f plata = Tupla3f(colorPlata, colorPlata, colorPlata);
+  MallaRevol* tapaAbajo = new MallaRevol("../plys/lata-pinf.ply", 100, false, false, true);
+  MallaRevol* tapaArriba = new MallaRevol("../plys/lata-psup.ply", 100, false, false, true);
+  tapaAbajo->fijarColorNodo(plata);
+  tapaArriba->fijarColorNodo(plata);
+  agregar(tapaAbajo);
+  agregar(tapaArriba);
 }
 
 //**********************************************************************

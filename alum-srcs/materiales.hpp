@@ -218,6 +218,15 @@ class FuenteLuz
    // de una tecla 'especial' (según la terminología de 'glut')
    bool gestionarEventoTeclaEspecial( int key ) ;
 
+   // Si es direccional
+   bool esDir();
+
+   // 0 -> alpha, 1-> beta
+   float getAngulo(unsigned int angulo);
+
+   // 0 -> alpha, 1 -> beta
+   void variarAngulo( unsigned int angulo, float incremento);
+
    //-------------------------------------------------------------------
    // variables de instancia:
 
@@ -244,6 +253,21 @@ protected:
 } ;
 
 //**********************************************************************
+
+class FuenteDireccional : public FuenteLuz
+{
+  public:
+    FuenteDireccional(float alpha_inicial, float beta_inicial);
+};
+
+class FuentePosicional : public FuenteLuz
+{
+  public:
+    FuentePosicional(const Tupla3f& posicion);
+};
+
+
+//**********************************************************************
 // Clase ConjuntoFuentes
 // ---------------
 // clase que contiene los atributos de una coleccion de fuentes de luz OpenGL
@@ -256,6 +280,7 @@ class ColFuentesLuz
    void insertar( FuenteLuz * pf ) ; // inserta una nueva
    void activar( unsigned id_prog ); // activa las fuentes de luz
    FuenteLuz * ptrFuente( unsigned i ); // devuelve ptr a la fuente de luz numero i
+   unsigned size(); // nº de fuentes
 
    private:
    std::vector<FuenteLuz *> vpf ; // vector de punteros a fuentes
@@ -263,21 +288,6 @@ class ColFuentesLuz
 } ;
 
 //**********************************************************************
-
-class FuenteDireccional : public FuenteLuz
-{
-  public:
-    FuenteDireccional(float alpha_inicial, float beta_inicial);
-
-    // 0 -> alpha, 1 -> beta
-    void variarAngulo( unsigned int angulo, float incremento);
-};
-
-class FuentePosicional : public FuenteLuz
-{
-  public:
-    FuentePosicional(const Tupla3f& posicion);
-};
 
 class ColeccionFuentesP4 : public ColFuentesLuz
 {

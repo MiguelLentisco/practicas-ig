@@ -132,7 +132,7 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
       d.push_back(d[j] + sqrt((perfil_original[j + 1] - perfil_original[j]).lengthSq()));
      for (unsigned int i = 0; i < nper; ++i)
       for (unsigned int j = 0; j < nvp; ++j)
-        coordTextura.push_back(Tupla2f(i * 1.0 / (nper - 1), d[j] / d[nvp - 1]));
+        coordTextura.push_back(Tupla2f(i * 1.0 / (nper - 1), 1 - (d[j] / d[nvp - 1])));
    }
   }
 
