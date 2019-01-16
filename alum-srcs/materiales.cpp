@@ -212,10 +212,10 @@ Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, f
    iluminacion = true;
    coloresCero();
 
-   VectorRGB colorRGB = VectorRGB(colorAmbDif(0), colorAmbDif(1), colorAmbDif(2), 1.0);
-
-   del.ambiente = tra.ambiente = colorRGB;
-   del.difusa = tra.difusa = colorRGB;
+   del.ambiente = tra.ambiente = VectorRGB(ka * colorAmbDif(0),
+      ka * colorAmbDif(1), ka * colorAmbDif(2), 1.0);
+   del.ambiente = tra.ambiente = VectorRGB(ka * colorAmbDif(0),
+     ka * colorAmbDif(1), ka * colorAmbDif(2), 1.0);
    del.especular = tra.especular = VectorRGB(ks, ks, ks, 1.0);
    del.exp_brillo = tra.exp_brillo = exp;
 
@@ -476,6 +476,9 @@ void ColFuentesLuz::activar( unsigned id_prog )
 {
   glEnable( GL_LIGHTING );
   //glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
+  glEnable( GL_NORMALIZE );
+  glDisable( GL_COLOR_MATERIAL );
+  glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
   for (unsigned int i = 0; i < vpf.size(); ++i)
     vpf[i]->activar();
   for (unsigned int i = vpf.size(); i < max_num_fuentes; ++i)
@@ -530,7 +533,7 @@ MaterialLata::MaterialLata() : Material("../imgs/lata-coke.jpg")
 {
   coloresCero();
   del.ambiente = tra.ambiente = VectorRGB(0.3, 0.3, 0.3, 1.0);
-  del.difusa = tra.difusa = VectorRGB(0.7, 0.7, 0.7, 1.0);
+  del.difusa = tra.difusa = VectorRGB(0.2, 0.2, 0.2, 1.0);
   del.especular = tra.especular = VectorRGB(0.5, 0.5, 0.5, 1.0);
   del.exp_brillo = tra.exp_brillo = 5.0;
 }
@@ -542,17 +545,17 @@ MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.3, 169.0 / 255.0, 0.0,
 //**********************************************************************
 
 MaterialPeonMadera::MaterialPeonMadera() :
- Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 1.0, 0.2, 0.2)
+ Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 0.75, 0.05, 1.0  )
 {
 }
 
 //**********************************************************************
 
-MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.5, 0.1, 0.7, 5.0)
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.4, 0.1, 0.5, 5.0)
 {
 //  del.ambiental = tra.ambiental = VectorRGB(1.0, 1.0, 1.0, 1.0);
 }
 
 //**********************************************************************
 
-MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.03, 0.04, 0.0, 0.0) {}
+MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.03, 0.04, 0.1, 1.0) {}

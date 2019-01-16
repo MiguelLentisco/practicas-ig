@@ -11,6 +11,7 @@
 #include "practica5.hpp"
 
 #include "CamaraInter.hpp"
+#include "grafo-escena.hpp"
 
 using namespace std ;
 
@@ -23,6 +24,8 @@ static unsigned camaraActiva = 0 ;
 static constexpr int numCamaras = 1;
 static CamaraInteractiva * camaras[numCamaras] = { nullptr };
 static CamaraInteractiva * camara = NULL;
+static NodoGrafoEscenaParam * objeto = NULL;
+static ColeccionFuentesP4 * fuentes = NULL;
 
 // viewport actual (se recalcula al inicializar y al fijar las matrices)
 Viewport viewport ;
@@ -37,8 +40,11 @@ void P5_Inicializar(  int vp_ancho, int vp_alto )
    cout << "Creando objetos de la práctica 5 .... " << flush ;
    // COMPLETAR: práctica 5: inicializar las variables de la práctica 5 (incluyendo el viewport)
    // .......
-   //P5_FijarMVPOpenGL(vp_ancho, vp_alto);
-   //camaras[0] = camara = new CamaraInteractiva();
+   camaras[0] = camara = new CamaraInteractiva(false, vp_alto * 1.0 / vp_ancho,
+                            0, 0, Tupla3f(0.0, 0.0, 0.0), true);
+   objeto = new EscenaP4();
+   fuentes = new ColeccionFuentesP4();
+   P5_FijarMVPOpenGL(vp_ancho, vp_alto);
 
    cout << "hecho." << endl << flush ;
 }
@@ -55,9 +61,8 @@ void P5_FijarMVPOpenGL( int vp_ancho, int vp_alto )
    viewport.matrizVp    = MAT_Viewport( viewport.org_x, viewport.org_y, viewport.ancho, viewport.alto );
    viewport.matrizVpInv = MAT_Viewport_inv( viewport.org_x, viewport.org_y, viewport.ancho, viewport.alto );
 
-   camaras[camaraActiva]->ratio_yx_vp = 1.0 * vp_alto / vp_ancho;
+   camaras[camaraActiva]->ratio_yx_vp =  vp_alto * 1.0 / vp_ancho;
    camaras[camaraActiva]->calcularViewfrustum();
-   camaras[camaraActiva]->activar();
 }
 // ---------------------------------------------------------------------
 
@@ -67,6 +72,8 @@ void P5_DibujarObjetos( ContextoVis & cv )
    // COMPLETAR: práctica 5: activar las fuentes de luz y visualizar la escena
    //      (se supone que la camara actual ya está activada)
    // .......
+   fuentes->activar(5);
+   objeto->visualizarGL(cv);
 
 }
 
@@ -76,30 +83,40 @@ bool P5_FGE_PulsarTeclaCaracter(  unsigned char tecla )
 {
 
    bool result = true ;
+   const float valor = 2.0;
 
    switch ( toupper( tecla ) )
    {
       case 'C':
          // COMPLETAR: práctica 5: activar siguiente camara
          // .....
+         camaraActiva = (camaraActiva + 1) % numCamaras;
+         cout << "P5: Cámara activa nº " << camaraActiva << endl;
+         camaras[camaraActiva]->ratio_yx_vp = 1.0 * viewport.alto / viewport.ancho;
+         camaras[camaraActiva]->calcularViewfrustum();
 
          break ;
 
       case 'V':
          // COMPLETAR: práctica 5: conmutar la cámara actual entre modo examinar y el modo primera persona
          // .....
-
+         if (camaras[camaraActiva]->examinar)
+          camaras[camaraActiva]->modoPrimeraPersona();
+         else
+          camaras[camaraActiva]->modoExaminar();
          break ;
 
       case '-':
          // COMPLETAR: práctica 5: desplazamiento en Z de la cámara actual (positivo) (desplaZ)
          // .....
+         camaras[camaraActiva]->desplaZ( valor );
 
          break;
 
       case '+':
          // COMPLETAR: práctica 5: desplazamiento en Z de la cámara actual (negativo) (desplaZ)
          // .....
+         camaras[camaraActiva]->desplaZ( -valor );
 
          break;
 
@@ -115,6 +132,7 @@ bool P5_FGE_PulsarTeclaEspecial(  int tecla  )
 {
 
    bool result = true ;
+   const float valor = 2.0;
 
 
    switch ( tecla )
@@ -122,22 +140,24 @@ bool P5_FGE_PulsarTeclaEspecial(  int tecla  )
       case GLFW_KEY_LEFT:
          // COMPLETAR: práctica 5: desplazamiento/rotacion hacia la izquierda (moverHV)
          // .....
+         camaras[camaraActiva]->moverHV( -valor, 0 );
 
          break;
       case GLFW_KEY_RIGHT:
          // COMPLETAR: práctica 5: desplazamiento/rotación hacia la derecha (moverHV)
          // .....
-
+         camaras[camaraActiva]->moverHV( valor, 0 );
          break;
       case GLFW_KEY_UP:
          // COMPLETAR: práctica 5: desplazamiento/rotación hacia arriba (moverHV)
          // .....
+         camaras[camaraActiva]->moverHV( 0, valor );
 
          break;
       case GLFW_KEY_DOWN:
          // COMPLETAR: práctica 5: desplazamiento/rotación hacia abajo (moverHV)
          // .....
-
+         camaras[camaraActiva]->moverHV( 0, -valor );
          break;
       default:
          result = false ;

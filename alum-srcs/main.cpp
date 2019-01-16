@@ -609,8 +609,8 @@ void Inicializa_GLFW( int argc, char * argv[] )
 void Inicializa_Vars( )
 {
    // inicializar práctica actual
-   practicaActual = 4;
-   contextoVis.modoVis = modoPuntos ;
+   practicaActual = 5;
+   contextoVis.modoVis = modoSuave ;
 }
 
 // ---------------------------------------------------------------------
@@ -627,7 +627,7 @@ void Inicializa_OpenGL( )
    glEnable( GL_DEPTH_TEST );
 
    // deshabilitar filtro de triangulos por su orientación:
-   glEnable( GL_CULL_FACE );
+   glDisable( GL_CULL_FACE );
 
    // establecer color de fondo: (1,1,1) (blanco)
    glClearColor( 1.0, 1.0, 1.0, 1.0 ) ;

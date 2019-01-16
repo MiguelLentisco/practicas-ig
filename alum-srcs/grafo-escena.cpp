@@ -481,7 +481,9 @@ Lata::Lata()
 PeonMadera::PeonMadera()
 {
   agregar(new MaterialPeonMadera());
-  agregar(new MallaRevol("../plys/peon.ply", 100, true, false, false));
+  MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, false);
+  peon->fijarColorNodo(Tupla3f(222.0 / 255, 184.0 / 255, 135.0 / 255));
+  agregar(peon);
 }
 
 
@@ -490,7 +492,9 @@ PeonMadera::PeonMadera()
 PeonBlanco::PeonBlanco()
 {
   agregar(new MaterialPeonBlanco());
-  agregar(new MallaRevol("../plys/peon.ply", 100, true, false, true));
+  MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, true);
+  peon->fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
+  agregar(peon);
 }
 
 
@@ -499,7 +503,9 @@ PeonBlanco::PeonBlanco()
 PeonNegro::PeonNegro()
 {
   agregar(new MaterialPeonNegro());
-  agregar(new MallaRevol("../plys/peon.ply", 100, true, false, true));
+  MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, true);
+  peon->fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
+  agregar(peon);
 }
 
 //**********************************************************************

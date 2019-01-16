@@ -59,13 +59,18 @@ void CamaraInteractiva::calcularViewfrustum(  )
    {
       // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
       // caso ortográfica: usar ratio_yx_vp, dist, función MAT_Ortografica
+      vf.near = n;
+      vf.far = dist;
       vf.persp = false;
+      vf.top = vf.near * tan(0.5 * hfov_grad * M_PI / 180.0);
+      vf.bottom = -vf.top;
       vf.right = vf.top * ratio_yx_vp;
       vf.left = -vf.left;
-      vf.far = dist;
       vf.matrizProy = MAT_Ortografica( vf.left, vf.right, vf.bottom, vf.top, vf.near, vf.far );
 
    }
+
+   activar();
 
 }
 
@@ -78,19 +83,19 @@ void CamaraInteractiva::calcularMarcoCamara()
 
    // COMPLETAR: práctica 5: recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
    //    (1) Matriz = Trasl( aten )*Rotacion( longi, Y )*Rotacion( -lati, X )* Traslacion( (0,0,dist) )
-   //    (2) ejes mcv = ejes mcv * matriz
+   //    (2) ejes mcv = matriz * ejes
    //    (3) recalcular matrices marco camara
    // .....
 
-   // ????
-   Matriz4f matriz = MAT_Traslacion(aten) * MAT_Rotacion(longi, 0.0, 1.0, 0.0)
+
+   Matriz4f nueva_mat = MAT_Traslacion(aten) * MAT_Rotacion(longi, 0.0, 1.0, 0.0)
     * MAT_Rotacion(-lati, 1.0, 0.0, 0.0) * MAT_Traslacion(0.0, 0.0, dist);
-   Matriz4f mEjes = MAT_Filas(mcv.eje);
-   mEjes(3, 3) = 1.0;
-   Matriz4f ejesCambiados = mEjes * matriz;
-   for (unsigned i = 0; i < 3; ++i)
-    for (unsigned j = 0; j < 3; ++j)
-      mcv.eje[i](j) = ejesCambiados(i, j);
+
+   mcv.eje[0] = nueva_mat * Tupla4f(1, 0, 0, 0);
+   mcv.eje[1] = nueva_mat * Tupla4f(0, 1, 0, 0);
+   mcv.eje[2] = nueva_mat * Tupla4f(0, 0, 1, 0);
+   mcv.org = nueva_mat * Tupla4f(0, 0, 0, 1);
+
    recalcularMatrMCV();
 }
 
@@ -139,15 +144,21 @@ void CamaraInteractiva::moverHV( float nh, float nv )
 
       mcv.org(0) += nh * udesp;
       mcv.org(1) += nv * udesp;
+
+      aten(0) += nh * udesp;
+      aten(1) += nv * udesp;
       recalcularMatrMCV();
 
    }
+
+   activar();
+
 }
 // -----------------------------------------------------------------------------
 // desplazar en el eje Z de la cámara (hacia adelante o hacia detrás)
 
 constexpr float dmin = 2.0*n,  // distancia minima (2*near)
-                porc = 2 ; // porcentaje de cambio (1%)
+                porc = 1 ; // porcentaje de cambio (1%)
 
 void CamaraInteractiva::desplaZ( float nz )
 {
@@ -166,9 +177,12 @@ void CamaraInteractiva::desplaZ( float nz )
       // COMPLETAR: práctica 5: desplazar 'mcv.org' en Z, y recalcular la matriz de vista
       // (y movimiento solidario del punto de atención)
       mcv.org(2) += nz * udesp;
+      aten(2) += nz * udesp;
       recalcularMatrMCV();
 
    }
+
+   activar();
 
 }
 // -----------------------------------------------------------------------------
@@ -185,6 +199,7 @@ void CamaraInteractiva::modoExaminar( const Tupla3f & pAten )
 {
    // COMPLETAR: práctica 5: fija punt. aten. y activa modo examinar, recalcula marco de camara
    // .....
+   examinar = true;
    aten = pAten;
    calcularMarcoCamara();
 
