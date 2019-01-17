@@ -82,44 +82,26 @@ EntradaNGE::~EntradaNGE()
 
 void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
 {
-  if (cv.modoSeleccionFBO) {
+    cv.pilaMateriales.push();
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
 
-    if (leerIdentificador() >= 0)
+    if (cv.modoSeleccionFBO && leerIdentificador() >= 0) {
       FijarColorIdent(leerIdentificador());
+    }
 
     for (unsigned int i = 0; i < entradas.size(); ++i) {
       if (entradas[i].tipo == TipoEntNGE::objeto) {
-        if (entradas[i].objeto->leerIdentificador() >= 0)
-          FijarColorIdent(entradas[i].objeto->leerIdentificador());
         entradas[i].objeto->visualizarGL(cv);
       } else if (entradas[i].tipo == TipoEntNGE::transformacion) {
         glMatrixMode( GL_MODELVIEW );
         glMultMatrixf(*(entradas[i].matriz));
-      }
+      } else if (!cv.modoSeleccionFBO && entradas[i].tipo == TipoEntNGE::material)
+        cv.pilaMateriales.activarMaterial(entradas[i].material);
     }
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
-  } else {
-     cv.pilaMateriales.push();
-     glMatrixMode( GL_MODELVIEW );
-     glPushMatrix();
-
-     for (unsigned i = 0; i < entradas.size(); ++i) {
-       if (entradas[i].tipo == TipoEntNGE::objeto)
-        entradas[i].objeto->visualizarGL(cv);
-       else if (entradas[i].tipo == TipoEntNGE::transformacion) {
-         glMatrixMode( GL_MODELVIEW );
-         glMultMatrixf(*(entradas[i].matriz));
-       } else if (entradas[i].tipo == TipoEntNGE::material)
-          cv.pilaMateriales.activarMaterial( entradas[i].material );
-     }
-
-     glMatrixMode( GL_MODELVIEW );
-     glPopMatrix();
-     cv.pilaMateriales.pop();
-  }
+    cv.pilaMateriales.pop();
 }
 // -----------------------------------------------------------------------------
 

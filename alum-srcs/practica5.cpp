@@ -21,11 +21,12 @@ using namespace std ;
 // ......
 
 static unsigned camaraActiva = 0 ;
-static constexpr int numCamaras = 1;
-static CamaraInteractiva * camaras[numCamaras] = { nullptr };
+static constexpr int numCamaras = 2;
+static CamaraInteractiva * camaras[numCamaras] = { nullptr, nullptr };
 static CamaraInteractiva * camara = NULL;
 static NodoGrafoEscenaParam * objeto = NULL;
 static ColeccionFuentesP4 * fuentes = NULL;
+static CamaraInteractiva * camaraOrtogonal = NULL;
 
 // viewport actual (se recalcula al inicializar y al fijar las matrices)
 Viewport viewport ;
@@ -44,6 +45,8 @@ void P5_Inicializar(  int vp_ancho, int vp_alto )
    // .......
    camaras[0] = camara = new CamaraInteractiva(false, vp_alto * 1.0 / vp_ancho,
                             0, 0, Tupla3f(0.0, 0.0, 0.0), true);
+   camaras[1] = camaraOrtogonal = new CamaraInteractiva(false, vp_alto * 1.0 / vp_ancho,
+                                    0, 0, Tupla3f(0.0, 0.0, 0.0), false);
    objeto = new EscenaP4();
    fuentes = new ColeccionFuentesP4();
    P5_FijarMVPOpenGL(vp_ancho, vp_alto);
@@ -93,7 +96,8 @@ bool P5_FGE_PulsarTeclaCaracter(  unsigned char tecla )
          // COMPLETAR: práctica 5: activar siguiente camara
          // .....
          camaraActiva = (camaraActiva + 1) % numCamaras;
-         cout << "P5: Cámara activa nº " << camaraActiva << endl;
+         cout << "P5: Cámara activa nº " << camaraActiva << " , es "
+              << (camaras[camaraActiva]->perspectiva ? "perspectiva" : "ortogonal") << endl;
          camaras[camaraActiva]->ratio_yx_vp = 1.0 * viewport.alto / viewport.ancho;
          camaras[camaraActiva]->calcularViewfrustum();
 

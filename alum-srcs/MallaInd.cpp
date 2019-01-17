@@ -15,7 +15,7 @@
 
 // -----------------------------------------------------------------------------
 Tupla3f centroCajaEnglobante(std::vector<Tupla3f> vertices) {
-  Tupla3f max, min;
+  Tupla3f max = vertices[0], min = vertices[0];
   for (unsigned int i = 0; i < vertices.size(); ++i) {
     for (unsigned j = 0; i < 3; ++i) {
       if (vertices[i](j) < min(j))
@@ -219,6 +219,8 @@ void MallaInd::visualizarGL( ContextoVis & cv )
      tipoVisualizacion = 0;
      glDisable( GL_LIGHTING );
      glDisable( GL_TEXTURE_2D );
+     if (leerIdentificador() >= 0)
+      FijarColorIdent(leerIdentificador());
    } else {
      switch (cv.modoVis) {
        case modoSuave:

@@ -40,6 +40,7 @@ CamaraInteractiva::CamaraInteractiva( bool examinar_ini, float ratio_yx_vp_ini,
 //    perspectiva, dist, ratio_yx_vp
 
 constexpr float n = 0.01 ; // valor 'near' en proy. persp
+constexpr float distAumentada = 100.0; // aumentamos distancia
 
 
 void CamaraInteractiva::calcularViewfrustum(  )
@@ -52,20 +53,21 @@ void CamaraInteractiva::calcularViewfrustum(  )
       // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
       // caso perspectiva: usar hfov_grad, n, ratio_yx_vp, dist, función MAT_Frustum
       // .....
-      vf = ViewFrustum(hfov_grad, ratio_yx_vp, n, dist);
+      vf = ViewFrustum(hfov_grad, ratio_yx_vp, n, dist + distAumentada);
 
    }
    else
    {
       // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
       // caso ortográfica: usar ratio_yx_vp, dist, función MAT_Ortografica
-      vf.near = n;
-      vf.far = dist;
+
       vf.persp = false;
-      vf.top = vf.near * tan(0.5 * hfov_grad * M_PI / 180.0);
+      vf.near = n;
+      vf.far = dist + distAumentada;
+      vf.top = dist;
       vf.bottom = -vf.top;
-      vf.right = vf.top * ratio_yx_vp;
-      vf.left = -vf.left;
+      vf.right = dist * ratio_yx_vp;
+      vf.left = -vf.right;
       vf.matrizProy = MAT_Ortografica( vf.left, vf.right, vf.bottom, vf.top, vf.near, vf.far );
 
    }
