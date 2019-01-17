@@ -65,6 +65,7 @@ class NodoGrafoEscena : public Objeto3D
 {
    protected:
      std::vector<EntradaNGE> entradas; // Lista de punteros de los objetos
+     bool centroCalculado;
 
    public:
 

@@ -82,28 +82,50 @@ EntradaNGE::~EntradaNGE()
 
 void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
 {
-   cv.pilaMateriales.push();
-   glMatrixMode( GL_MODELVIEW );
-   glPushMatrix();
+  if (cv.modoSeleccionFBO) {
+    glMatrixMode( GL_MODELVIEW );
+    glPushMatrix();
 
-   for (unsigned i = 0; i < entradas.size(); ++i) {
-     if (entradas[i].tipo == TipoEntNGE::objeto)
-      entradas[i].objeto->visualizarGL(cv);
-     else if (entradas[i].tipo == TipoEntNGE::transformacion) {
-       glMatrixMode( GL_MODELVIEW );
-       glMultMatrixf(*(entradas[i].matriz));
-     } else if (entradas[i].tipo == TipoEntNGE::material)
-        cv.pilaMateriales.activarMaterial( entradas[i].material );
-   }
+    if (leerIdentificador() >= 0)
+      FijarColorIdent(leerIdentificador());
 
-   glMatrixMode( GL_MODELVIEW );
-   glPopMatrix();
-   cv.pilaMateriales.pop();
+    for (unsigned int i = 0; i < entradas.size(); ++i) {
+      if (entradas[i].tipo == TipoEntNGE::objeto) {
+        if (entradas[i].objeto->leerIdentificador() >= 0)
+          FijarColorIdent(entradas[i].objeto->leerIdentificador());
+        entradas[i].objeto->visualizarGL(cv);
+      } else if (entradas[i].tipo == TipoEntNGE::transformacion) {
+        glMatrixMode( GL_MODELVIEW );
+        glMultMatrixf(*(entradas[i].matriz));
+      }
+    }
+    glMatrixMode( GL_MODELVIEW );
+    glPopMatrix();
+  } else {
+     cv.pilaMateriales.push();
+     glMatrixMode( GL_MODELVIEW );
+     glPushMatrix();
+
+     for (unsigned i = 0; i < entradas.size(); ++i) {
+       if (entradas[i].tipo == TipoEntNGE::objeto)
+        entradas[i].objeto->visualizarGL(cv);
+       else if (entradas[i].tipo == TipoEntNGE::transformacion) {
+         glMatrixMode( GL_MODELVIEW );
+         glMultMatrixf(*(entradas[i].matriz));
+       } else if (entradas[i].tipo == TipoEntNGE::material)
+          cv.pilaMateriales.activarMaterial( entradas[i].material );
+     }
+
+     glMatrixMode( GL_MODELVIEW );
+     glPopMatrix();
+     cv.pilaMateriales.pop();
+  }
 }
 // -----------------------------------------------------------------------------
 
 NodoGrafoEscena::NodoGrafoEscena()
 {
+  centroCalculado = false;
 }
 // -----------------------------------------------------------------------------
 
@@ -171,7 +193,19 @@ void NodoGrafoEscena::calcularCentroOC()
    //    en coordenadas de objeto (hay que hacerlo recursivamente)
    //   (si el centro ya ha sido calculado, no volver a hacerlo)
    // ........
+   if (!centroCalculado) {
+     vector<Tupla3f> centros;
+     Matriz4f mmodelado = MAT_Ident();
+     for (unsigned int i = 0; i < entradas.size(); ++i)
+       if (entradas[i].tipo == TipoEntNGE::objeto) {
+         entradas[i].objeto->calcularCentroOC();
+         centros.push_back(mmodelado * entradas[i].objeto->leerCentroOC());
+       } else if(entradas[i].tipo == TipoEntNGE::transformacion)
+          mmodelado = mmodelado * (*entradas[i].matriz);
+     ponerCentroOC(centroCajaEnglobante(centros));
+     centroCalculado = true;
 
+   }
 }
 // -----------------------------------------------------------------------------
 // método para buscar un objeto con un identificador y devolver un puntero al mismo
@@ -186,6 +220,26 @@ bool NodoGrafoEscena::buscarObjeto
 {
    // COMPLETAR: práctica 5: buscar un sub-objeto con un identificador
    // ........
+
+   if (!centroCalculado)
+    calcularCentroOC();
+
+   bool encontrado = ident_busc == leerIdentificador();
+
+   if (encontrado) {
+     centro_wc = mmodelado * leerCentroOC();
+     *objeto = this;
+   }
+
+   Matriz4f mmodeladoNueva = mmodelado;
+
+   for (unsigned i = 0; i < entradas.size() && !encontrado; ++i)
+      if (entradas[i].tipo == TipoEntNGE::objeto)
+        encontrado = entradas[i].objeto->buscarObjeto(ident_busc, mmodeladoNueva, objeto, centro_wc);
+      else if (entradas[i].tipo == TipoEntNGE::transformacion)
+        mmodeladoNueva = mmodeladoNueva * (*entradas[i].matriz);
+
+   return encontrado;
 
 }
 
@@ -447,9 +501,11 @@ Snowman::Snowman() {
 
 CentroLata::CentroLata()
 {
+  ponerIdentificador(-1);
   agregar(new MaterialLata());
   MallaRevol* centro = new MallaRevol("../plys/lata-pcue.ply", 100 , false, false, true);
   centro->fijarColorNodo(Tupla3f(1.0, 0.0, 0.0));
+  centro->ponerIdentificador(-1);
   agregar(centro);
 }
 
@@ -457,6 +513,7 @@ CentroLata::CentroLata()
 
 TapasLata::TapasLata()
 {
+  ponerIdentificador(-1);
   agregar(new MaterialTapasLata());
   float colorPlata = (1.0 / 255) * 192;
   Tupla3f plata = Tupla3f(colorPlata, colorPlata, colorPlata);
@@ -464,6 +521,8 @@ TapasLata::TapasLata()
   MallaRevol* tapaArriba = new MallaRevol("../plys/lata-psup.ply", 100, false, false, true);
   tapaAbajo->fijarColorNodo(plata);
   tapaArriba->fijarColorNodo(plata);
+  tapaAbajo->ponerIdentificador(-1);
+  tapaArriba->ponerIdentificador(-1);
   agregar(tapaAbajo);
   agregar(tapaArriba);
 }
@@ -472,6 +531,8 @@ TapasLata::TapasLata()
 
 Lata::Lata()
 {
+  ponerNombre("Lata");
+  ponerIdentificador(1);
   agregar(new TapasLata());
   agregar(new CentroLata());
 }
@@ -480,9 +541,12 @@ Lata::Lata()
 
 PeonMadera::PeonMadera()
 {
+  ponerNombre("Peón madera");
+  ponerIdentificador(2);
   agregar(new MaterialPeonMadera());
   MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, false);
   peon->fijarColorNodo(Tupla3f(222.0 / 255, 184.0 / 255, 135.0 / 255));
+  peon->ponerIdentificador(-1);
   agregar(peon);
 }
 
@@ -491,9 +555,12 @@ PeonMadera::PeonMadera()
 
 PeonBlanco::PeonBlanco()
 {
+  ponerNombre("Peón blanco");
+  ponerIdentificador(3);
   agregar(new MaterialPeonBlanco());
   MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, true);
   peon->fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
+  peon->ponerIdentificador(-1);
   agregar(peon);
 }
 
@@ -502,8 +569,11 @@ PeonBlanco::PeonBlanco()
 
 PeonNegro::PeonNegro()
 {
+  ponerNombre("Peón negro");
+  ponerIdentificador(4);
   agregar(new MaterialPeonNegro());
   MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, true);
+  peon->ponerIdentificador(-1);
   peon->fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
   agregar(peon);
 }

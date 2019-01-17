@@ -32,6 +32,8 @@ Viewport viewport ;
 // true si se está en modo arrastrar, false si no
 static bool modo_arrastrar = false ;
 
+static int xant, yant;
+
 
 // ---------------------------------------------------------------------
 
@@ -104,6 +106,9 @@ bool P5_FGE_PulsarTeclaCaracter(  unsigned char tecla )
           camaras[camaraActiva]->modoPrimeraPersona();
          else
           camaras[camaraActiva]->modoExaminar();
+         cout << "P5: Modo de cámara cambiado a "
+              << (camaras[camaraActiva]->examinar ? "examinar. " :
+                  "primera persona") << endl;
          break ;
 
       case '-':
@@ -173,19 +178,38 @@ void P5_ClickIzquierdo( int x, int y )
 {
 
    // COMPLETAR: práctica 5: visualizar escena en modo selección y leer el color del pixel en (x,y)
-
+   glDisable( GL_LIGHTING );
+   glDisable( GL_TEXTURE_2D );
+   glClearColor(0.0, 0.0, 0.0, 1.0);
+   glColor3ub(0.0, 0.0, 0.0);
+   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
    // 1. crear un 'contextovis' apropiado
    // .....
+   ContextoVis cv;
+   cv.modoSeleccionFBO = true;
 
    // 2. visualizar en modo selección (sobre el backbuffer)
+   objeto->visualizarGL(cv);
+
    // ....
 
    // 3. leer el color del pixel, si es 0 no se hace nada
    // .....
-
+   int ident = LeerIdentEnPixel(x, y);
    // 4. buscar el objeto en el grafo de escena e informar del mismo
    // .....
+   if (ident != 0) {
+     Objeto3D* bus_objeto = NULL;
+     Tupla3f centro_wc(0.0, 0.0, 0.0);
+     if (objeto->buscarObjeto(ident, MAT_Ident(), &bus_objeto, centro_wc)) {
+       camaras[camaraActiva]->modoExaminar(centro_wc);
+       cout << "P5: Se ha seleccionado el objeto: " << bus_objeto->leerNombre()
+            << " con centro " << centro_wc << endl;
+     } else
+       cout << "P5: Error al seleccionar, no se ha encontrado" << endl;
+   } else
+    cout << "P5: No se ha seleccionado nada" << endl;
 
 }
 // ---------------------------------------------------------------------
@@ -194,7 +218,9 @@ void P5_ClickIzquierdo( int x, int y )
 void P5_InicioModoArrastrar( int x, int y )
 {
    // COMPLETAR: práctica 5: activar bool de modo arrastrar, registrar (x,y) de inicio del modo arrastrar
-   // .....
+   modo_arrastrar = true;
+   xant = x;
+   yant = y;
 
 }
 // ---------------------------------------------------------------------
@@ -204,6 +230,7 @@ void P5_FinModoArrastrar()
 {
    // COMPLETAR: práctica 5: desactivar bool del modo arrastrar
    // .....
+   modo_arrastrar = false;
 
 }
 // ---------------------------------------------------------------------
@@ -213,7 +240,9 @@ void P5_RatonArrastradoHasta( int x, int y )
 {
    // COMPLETAR: práctica 5: calcular desplazamiento desde inicio de modo arrastrar, actualizar la camara (moverHV)
    // .....
-
+   camaras[camaraActiva]->moverHV(x - xant, y - yant);
+   xant = x;
+   yant = y;
 
 }
 // ---------------------------------------------------------------------
@@ -250,6 +279,7 @@ bool P5_FGE_Scroll( int direction )
 {
    // COMPLETAR: práctica 5: acercar/alejar la camara (desplaZ)
    // .....
+   camaras[camaraActiva]->desplaZ(direction * 2.0);
 
    return true ;
 }
@@ -259,6 +289,11 @@ void FijarColorIdent( const int ident )  // 0 ≤ ident < 2^24
 {
    // COMPLETAR: práctica 5: fijar color actual de OpenGL usando 'ident' (glColor3ub)
    // .....
+   const unsigned char byteR = ident % 0x100U,
+                       byteG = (ident / 0x100U) % 0x100U,
+                       byteB = (ident / 0x10000U) % 0x100U;
+
+   glColor3ub( byteR, byteG, byteB );
 
 }
 //---------------
@@ -267,6 +302,10 @@ int LeerIdentEnPixel( int xpix, int ypix )
 {
    // COMPLETAR: práctica 5: leer el identificador codificado en el color del pixel (x,y)
    // .....
+
+   unsigned char bytes[3];
+   glReadPixels( xpix, ypix, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, (void *) bytes);
+   return bytes[0] + (0x100U * bytes[1]) + (0x10000U * bytes[2]);
 
 }
 //---------------

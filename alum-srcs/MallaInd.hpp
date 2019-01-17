@@ -19,6 +19,7 @@ class MallaInd : public Objeto3D
 
    protected:
       bool sinVBO;
+      bool centroCalculado;
 
       GLuint id_vbo_ver;
       GLuint id_vbo_tri;
@@ -52,7 +53,7 @@ class MallaInd : public Objeto3D
 
    public:
       // crea una malla vacía (nombre: "malla indexada nueva vacía")
-      MallaInd() ;
+      MallaInd();
       // crea una malla vacía con un nombre concreto:
       MallaInd( const std::string & nombreIni );
       // visualizar el objeto con OpenGL
@@ -63,6 +64,8 @@ class MallaInd : public Objeto3D
       void fijarColorNodo(const Tupla3f & color);
       // Rellena el mismo color para toda la figura, con color aleatorio
       void fijarColorNodo();
+      // Calcular el centro de la caja englobante más pequeña de la malla
+      void calcularCentroOC();
 
 } ;
 // ---------------------------------------------------------------------
@@ -94,5 +97,7 @@ class Tetraedro : public MallaInd
       Tetraedro();
 };
 
+
+Tupla3f centroCajaEnglobante(std::vector<Tupla3f> vertices);
 
 #endif

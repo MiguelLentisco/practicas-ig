@@ -13,6 +13,20 @@
 // *****************************************************************************
 // funciones auxiliares
 
+// -----------------------------------------------------------------------------
+Tupla3f centroCajaEnglobante(std::vector<Tupla3f> vertices) {
+  Tupla3f max, min;
+  for (unsigned int i = 0; i < vertices.size(); ++i) {
+    for (unsigned j = 0; i < 3; ++i) {
+      if (vertices[i](j) < min(j))
+        min(j) = vertices[i](j);
+      if (vertices[i](j) > max(j))
+        max(j) = vertices[i](j);
+    }
+  }
+  return (max + min) / 2.0;
+}
+
 
 // *****************************************************************************
 // métodos de la clase MallaInd.
@@ -23,6 +37,7 @@ MallaInd::MallaInd()
    ponerNombre("malla indexada, anónima");
    sinVBO = true;
    n_vertices = n_triangulos = 0;
+   centroCalculado = false;
 }
 // -----------------------------------------------------------------------------
 
@@ -31,6 +46,7 @@ MallaInd::MallaInd( const std::string & nombreIni )
    // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
    ponerNombre(nombreIni) ;
    sinVBO = true;
+   centroCalculado = false;
    n_vertices = n_triangulos = 0;
 }
 
@@ -83,7 +99,7 @@ void MallaInd::visualizarBE_MI( ContextoVis & cv) {
   for (unsigned int i = 0; i < n_triangulos; ++i)
     for (unsigned int j = 0; j < 3; ++j) {
       unsigned int ind_ver = tablaTriangulos[i](j);
-      if (colVertices.size() > 0)
+      if (colVertices.size() > 0 && !cv.modoSeleccionFBO )
         glColor3fv( colVertices[ind_ver] );
       if (normalesVertices.size() > 0)
         glNormal3fv( normalesVertices[ind_ver] );
@@ -124,7 +140,7 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
   // Cambiar el color
   //glColor3f(1, 0, 0);
 
-  if (colVertices.size() > 0 ) {
+  if (colVertices.size() > 0 && !cv.modoSeleccionFBO) {
     glEnableClientState( GL_COLOR_ARRAY );
     glColorPointer( 3, GL_FLOAT, 0, colVertices.data() );
   }
@@ -155,7 +171,7 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
   if (sinVBO)
     crearVBOs();
 
-  if (colVertices.size() > 0 ) {
+  if (colVertices.size() > 0 && !cv.modoSeleccionFBO) {
     glBindBuffer( GL_ARRAY_BUFFER, id_vbo_col );
     glColorPointer( 3, GL_FLOAT, 0, 0 );
     glEnableClientState( GL_COLOR_ARRAY );
@@ -197,49 +213,57 @@ void MallaInd::visualizarGL( ContextoVis & cv )
    GLenum modoSombra;
    int tipoVisualizacion;
 
-   switch (cv.modoVis) {
-     case modoSuave:
-      modoVisualizacion = GL_FILL;
-      modoSombra = GL_FLAT;
-      tipoVisualizacion = 2;
-      break;
+   if (cv.modoSeleccionFBO) {
+     modoVisualizacion = GL_FILL;
+     modoSombra = GL_FLAT;
+     tipoVisualizacion = 0;
+     glDisable( GL_LIGHTING );
+     glDisable( GL_TEXTURE_2D );
+   } else {
+     switch (cv.modoVis) {
+       case modoSuave:
+        modoVisualizacion = GL_FILL;
+        modoSombra = GL_FLAT;
+        tipoVisualizacion = 2;
+        break;
 
-     case modoPlano:
-      modoVisualizacion = GL_FILL;
-      modoSombra = GL_SMOOTH;
-      tipoVisualizacion = 0;
-      break;
+       case modoPlano:
+        modoVisualizacion = GL_FILL;
+        modoSombra = GL_SMOOTH;
+        tipoVisualizacion = 0;
+        break;
 
-     case modoPuntos:
-      modoVisualizacion = GL_POINT;
-      modoSombra = GL_FLAT;
-      tipoVisualizacion = 0;
-      glDisable( GL_LIGHTING );
-      glDisable( GL_TEXTURE_2D );
-      break;
+       case modoPuntos:
+        modoVisualizacion = GL_POINT;
+        modoSombra = GL_FLAT;
+        tipoVisualizacion = 0;
+        glDisable( GL_LIGHTING );
+        glDisable( GL_TEXTURE_2D );
+        break;
 
-     case modoAlambre:
-      modoVisualizacion = GL_LINE;
-      modoSombra = GL_FLAT;
-      tipoVisualizacion = 0;
-      glDisable( GL_LIGHTING );
-      glDisable( GL_TEXTURE_2D );
-      break;
+       case modoAlambre:
+        modoVisualizacion = GL_LINE;
+        modoSombra = GL_FLAT;
+        tipoVisualizacion = 0;
+        glDisable( GL_LIGHTING );
+        glDisable( GL_TEXTURE_2D );
+        break;
 
-     case modoSolido:
-      modoVisualizacion = GL_FILL;
-      modoSombra = GL_FLAT;
-      tipoVisualizacion = 0;
-      glDisable( GL_LIGHTING );
-      glDisable( GL_TEXTURE_2D );
-      break;
+       case modoSolido:
+        modoVisualizacion = GL_FILL;
+        modoSombra = GL_FLAT;
+        tipoVisualizacion = 0;
+        glDisable( GL_LIGHTING );
+        glDisable( GL_TEXTURE_2D );
+        break;
 
-     default:
-      modoVisualizacion = GL_FILL;
-      modoSombra = GL_FLAT;
-      tipoVisualizacion = 0;
-      glDisable( GL_LIGHTING );
-      glDisable( GL_TEXTURE_2D );
+       default:
+        modoVisualizacion = GL_FILL;
+        modoSombra = GL_FLAT;
+        tipoVisualizacion = 0;
+        glDisable( GL_LIGHTING );
+        glDisable( GL_TEXTURE_2D );
+     }
    }
 
   // Cambiar modo de visualización
@@ -313,6 +337,15 @@ void MallaInd::crearVBOs() {
   sinVBO = false;
 }
 
+
+// *****************************************************************************
+
+void MallaInd::calcularCentroOC() {
+  if (!centroCalculado) {
+    ponerCentroOC(centroCajaEnglobante(tablaVertices));
+    centroCalculado = true;
+  }
+}
 
 // Constructor Cubo
 // *****************************************************************************
