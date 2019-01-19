@@ -39,7 +39,7 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
    calcular_normales();
 
    // Le da color aleatorio
-   //fijarColorNodo();
+   fijarColorNodo();
 }
 
 // *****************************************************************************
@@ -49,7 +49,7 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
                         const bool     crear_tapas,
                         const bool     cerrar_malla )
                           : MallaRevol (nombre_arch, nperfiles, crear_tapas,
-                                          cerrar_malla, false) {}
+                                          cerrar_malla, true) {}
 
 // *****************************************************************************
 
@@ -58,7 +58,7 @@ void MallaRevol::crearMallaRevol( const std::vector<Tupla3f> & perfil_original,
                                   const unsigned nperfiles,
                                   const bool     crear_tapas,
                                   const bool     cerrar_malla,
-                                  const bool     crear_texturas = false)
+                                  const bool     crear_texturas)
 {
   sinVBO = true;
   nper = nperfiles;

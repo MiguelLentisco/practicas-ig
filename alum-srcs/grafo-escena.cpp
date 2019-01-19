@@ -255,6 +255,7 @@ void NodoGrafoEscenaParam::siguienteCuadro()
 // -----------------------------------------------------------------------------
 
 PuntoBoca::PuntoBoca() {
+  agregar(new MaterialPeonNegro);
   agregar(MAT_Traslacion(0.0, 0.0, 1.0));
   agregar(MAT_Escalado(0.05, 0.05, 0.05));
   agregar(new Esfera);
@@ -332,6 +333,7 @@ PliegueBufanda::PliegueBufanda() {
 }
 
 Bufanda::Bufanda() {
+  agregar(new MaterialLata);
   agregar(MAT_Traslacion(0.0, -0.7, 0.0));
   PliegueBufanda * pB = new PliegueBufanda;
   mPliegue = pB->mPliegue;
@@ -376,6 +378,7 @@ PalitoIzquierdo::PalitoIzquierdo() {
 }
 
 Brazo::Brazo() {
+  agregar(new MaterialPeonMadera);
   matrizBrazo = leerPtrMatriz(agregar(MAT_Ident()));
   agregar(MAT_Traslacion(0.6, 0.5, -0.2));
   agregar(MAT_Rotacion(30.0, 0.0, 1.0, 0.0));
@@ -397,6 +400,7 @@ Brazos::Brazos() {
 }
 
 Botones::Botones() {
+  agregar(new MaterialPeonNegro);
   agregar(MAT_Escalado(0.1, 0.1, 0.1));
   agregar(MAT_Traslacion(0.0, -1.0, 9.7));
   agregar(new Esfera);
@@ -408,6 +412,7 @@ Botones::Botones() {
 }
 
 Cuerpo::Cuerpo() {
+  agregar(new MaterialPeonBlanco);
   agregar(MAT_Traslacion(0.0, 2.5, 0.0));
   agregar(MAT_Escalado(2.0, 1.5, 2.0));
   agregar(new Esfera);
@@ -420,6 +425,7 @@ Cuerpo::Cuerpo() {
 }
 
 Base::Base() {
+  agregar(new MaterialPeonBlanco);
   agregar(MAT_Escalado(3.0, 2.2, 3.0));
   agregar(new Esfera);
   fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));

@@ -29,7 +29,7 @@ class MallaRevol : public MallaInd
                           const unsigned nperfiles,
                           const bool     crear_tapas,
                           const bool     cerrar_malla,
-                          const bool     crear_texturas
+                          const bool     crear_texturas = true
                         );
 
 

@@ -18,6 +18,7 @@ static unsigned objetoActivo4 = 0 ;
 static constexpr int numObjetos4 = 1;
 static NodoGrafoEscenaParam * objetos4[numObjetos4] = { nullptr };
 static EscenaP4 * escena = NULL;
+//static Snowman * snowman = NULL;
 static unsigned int anguloActivo = 0; // Alpha: 0, Beta: 1
 static ColeccionFuentesP4 * fuentes = NULL;
 static unsigned fuenteActiva = 8;
@@ -36,6 +37,7 @@ void P4_Inicializar(  )
 
    fuentes = new ColeccionFuentesP4();
    objetos4[0] = escena = new EscenaP4();
+   //objetos4[1] = snowman = new Snowman();
 
    // Se asume que hay almenos una direccional
    for (unsigned int i = 0; i < fuentes->size() && fuenteActiva == 8; ++i)
