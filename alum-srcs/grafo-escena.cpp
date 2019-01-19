@@ -337,7 +337,7 @@ Bufanda::Bufanda() {
   mPliegue = pB->mPliegue;
   agregar(pB);
   agregar(MAT_Escalado(1.0, 0.4, 1.0));
-  agregar(new Cilindro(1.0, 1.0, 50, 50, false, true));
+  agregar(new Cilindro(1.0, 1.0, 50, 50, false, false));
   fijarColorNodo(Tupla3f(1.0, 0.0, 0.0));
 }
 

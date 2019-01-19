@@ -21,10 +21,14 @@ using namespace std ;
 // ......
 
 static unsigned camaraActiva = 0 ;
+static unsigned objetoActivo = 0;
 static constexpr int numCamaras = 2;
+static constexpr int numObjetos = 1;
 static CamaraInteractiva * camaras[numCamaras] = { nullptr, nullptr };
+static NodoGrafoEscenaParam * objetos[numObjetos] = { nullptr };
 static CamaraInteractiva * camara = NULL;
-static NodoGrafoEscenaParam * objeto = NULL;
+static EscenaP4 * escenaLataPeones = NULL;
+//static Snowman * snowman = NULL;
 static ColeccionFuentesP4 * fuentes = NULL;
 static CamaraInteractiva * camaraOrtogonal = NULL;
 
@@ -47,7 +51,8 @@ void P5_Inicializar(  int vp_ancho, int vp_alto )
                             0, 0, Tupla3f(0.0, 0.0, 0.0), true);
    camaras[1] = camaraOrtogonal = new CamaraInteractiva(false, vp_alto * 1.0 / vp_ancho,
                                     0, 0, Tupla3f(0.0, 0.0, 0.0), false);
-   objeto = new EscenaP4();
+   objetos[0] = escenaLataPeones = new EscenaP4();
+   //objetos[1] = snowman = new Snowman();
    fuentes = new ColeccionFuentesP4();
    P5_FijarMVPOpenGL(vp_ancho, vp_alto);
 
@@ -75,7 +80,7 @@ void P5_DibujarObjetos( ContextoVis & cv )
    //      (se supone que la camara actual ya está activada)
    // .......
    fuentes->activar(5);
-   objeto->visualizarGL(cv);
+   objetos[objetoActivo]->visualizarGL(cv);
 
 }
 
@@ -125,6 +130,16 @@ bool P5_FGE_PulsarTeclaCaracter(  unsigned char tecla )
          camaras[camaraActiva]->desplaZ( -valor );
 
          break;
+
+      case 'O' :
+         objetoActivo = (objetoActivo + 1) % numObjetos;
+         cout << "P5: nuevo objeto activo es: " << objetoActivo;
+         if (objetos[objetoActivo] != nullptr)
+           cout << " (" << objetos[objetoActivo]->leerNombre() << ")." << endl;
+         else
+           cout << " (objeto no creado)" << endl;
+         result = true;
+         break ;
 
       default:
          result = false ;
@@ -191,7 +206,7 @@ void P5_ClickIzquierdo( int x, int y )
    cv.modoSeleccionFBO = true;
 
    // 2. visualizar en modo selección (sobre el backbuffer)
-   objeto->visualizarGL(cv);
+   objetos[objetoActivo]->visualizarGL(cv);
 
    // ....
 
@@ -203,7 +218,7 @@ void P5_ClickIzquierdo( int x, int y )
    if (ident != 0) {
      Objeto3D* bus_objeto = NULL;
      Tupla3f centro_wc(0.0, 0.0, 0.0);
-     if (objeto->buscarObjeto(ident, MAT_Ident(), &bus_objeto, centro_wc)) {
+     if (objetos[objetoActivo]->buscarObjeto(ident, MAT_Ident(), &bus_objeto, centro_wc)) {
        camaras[camaraActiva]->modoExaminar(centro_wc);
        cout << "P5: Se ha seleccionado el objeto: " << bus_objeto->leerNombre()
             << " con centro " << centro_wc << endl;

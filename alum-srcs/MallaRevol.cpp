@@ -160,7 +160,7 @@ Cilindro::Cilindro( float r,
   fijarColorNodo();
 }
 
-Cilindro::Cilindro(float r, float a) : Cilindro(r, a, 50, 50, true, true) {
+Cilindro::Cilindro(float r, float a) : Cilindro(r, a, 50, 50, true, false) {
 }
 
 Cilindro::Cilindro() : Cilindro(1.0, 1.0) {
@@ -192,7 +192,7 @@ Esfera::Esfera( float r,
   fijarColorNodo();
 }
 
-Esfera::Esfera(float r) : Esfera(r, 50, 50, true, true) {
+Esfera::Esfera(float r) : Esfera(r, 50, 50, false, false) {
 }
 
 Esfera::Esfera() : Esfera(1.0) {
@@ -225,7 +225,7 @@ Cono::Cono( float r,
   fijarColorNodo();
 }
 
-Cono::Cono(float r, float a) : Cono(r, a, 50, 50, true, true) {
+Cono::Cono(float r, float a) : Cono(r, a, 50, 50, true, false) {
 }
 
 Cono::Cono() : Cono(1.0, 1.0) {
