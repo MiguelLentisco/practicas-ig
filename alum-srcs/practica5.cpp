@@ -79,7 +79,7 @@ void P5_DibujarObjetos( ContextoVis & cv )
    // COMPLETAR: práctica 5: activar las fuentes de luz y visualizar la escena
    //      (se supone que la camara actual ya está activada)
    // .......
-   fuentes->activar(5);
+   fuentes->activar(camaras[camaraActiva]->perspectiva);
    objetos[objetoActivo]->visualizarGL(cv);
 
 }

@@ -213,6 +213,8 @@ void MallaInd::visualizarGL( ContextoVis & cv )
    GLenum modoSombra;
    int tipoVisualizacion;
 
+   glEnable( GL_RESCALE_NORMAL );
+
    if (cv.modoSeleccionFBO) {
      modoVisualizacion = GL_FILL;
      modoSombra = GL_FLAT;
@@ -225,14 +227,14 @@ void MallaInd::visualizarGL( ContextoVis & cv )
      switch (cv.modoVis) {
        case modoSuave:
         modoVisualizacion = GL_FILL;
-        modoSombra = GL_FLAT;
-        tipoVisualizacion = 2;
+        modoSombra = GL_SMOOTH;
+        tipoVisualizacion = 0;
         break;
 
        case modoPlano:
         modoVisualizacion = GL_FILL;
-        modoSombra = GL_SMOOTH;
-        tipoVisualizacion = 0;
+        modoSombra = GL_FLAT;
+        tipoVisualizacion = 2;
         break;
 
        case modoPuntos:

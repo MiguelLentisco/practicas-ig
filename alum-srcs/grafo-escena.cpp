@@ -505,8 +505,8 @@ TapasLata::TapasLata()
   agregar(new MaterialTapasLata());
   float colorPlata = (1.0 / 255) * 192;
   Tupla3f plata = Tupla3f(colorPlata, colorPlata, colorPlata);
-  MallaRevol* tapaAbajo = new MallaRevol("../plys/lata-pinf.ply", 100, false, false, true);
-  MallaRevol* tapaArriba = new MallaRevol("../plys/lata-psup.ply", 100, false, false, true);
+  MallaRevol* tapaAbajo = new MallaRevol("../plys/lata-pinf.ply", 100, false, false, false);
+  MallaRevol* tapaArriba = new MallaRevol("../plys/lata-psup.ply", 100, false, false, false);
   tapaAbajo->fijarColorNodo(plata);
   tapaArriba->fijarColorNodo(plata);
   tapaAbajo->ponerIdentificador(-1);
@@ -546,7 +546,7 @@ PeonBlanco::PeonBlanco()
   ponerNombre("Peón blanco");
   ponerIdentificador(3);
   agregar(new MaterialPeonBlanco());
-  MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, true);
+  MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, false);
   peon->fijarColorNodo(Tupla3f(1.0, 1.0, 1.0));
   peon->ponerIdentificador(-1);
   agregar(peon);
@@ -560,7 +560,7 @@ PeonNegro::PeonNegro()
   ponerNombre("Peón negro");
   ponerIdentificador(4);
   agregar(new MaterialPeonNegro());
-  MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, true);
+  MallaRevol * peon = new MallaRevol("../plys/peon.ply", 100, true, false, false);
   peon->ponerIdentificador(-1);
   peon->fijarColorNodo(Tupla3f(0.0, 0.0, 0.0));
   agregar(peon);

@@ -123,6 +123,6 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 
 void P4_DibujarObjetos( ContextoVis & cv )
 {
-  fuentes->activar(4);
+  fuentes->activar(true);
   objetos4[objetoActivo4]->visualizarGL(cv);
 }

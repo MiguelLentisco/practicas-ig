@@ -49,7 +49,7 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
                         const bool     crear_tapas,
                         const bool     cerrar_malla )
                           : MallaRevol (nombre_arch, nperfiles, crear_tapas,
-                                          cerrar_malla, true) {}
+                                          cerrar_malla, false) {}
 
 // *****************************************************************************
 

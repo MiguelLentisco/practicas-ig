@@ -279,7 +279,7 @@ class ColFuentesLuz
    ColFuentesLuz() ; // crea la colección vacía
    ~ColFuentesLuz() ;
    void insertar( FuenteLuz * pf ) ; // inserta una nueva
-   void activar( unsigned id_prog ); // activa las fuentes de luz
+   void activar( bool esProyectiva = true); // activa las fuentes de luz
    FuenteLuz * ptrFuente( unsigned i ); // devuelve ptr a la fuente de luz numero i
    unsigned size(); // nº de fuentes
 
