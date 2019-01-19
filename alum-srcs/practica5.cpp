@@ -60,13 +60,10 @@ void P5_FijarMVPOpenGL( int vp_ancho, int vp_alto )
    // COMPLETAR: práctica 5: actualizar viewport, actualizar y activar la camara actual
    //     (en base a las dimensiones del viewport)
    // .......
-   viewport.ancho = vp_ancho;
-   viewport.alto = vp_alto;
-   viewport.ratio_yx = float(viewport.alto) / float(viewport.ancho) ;
-   viewport.matrizVp    = MAT_Viewport( viewport.org_x, viewport.org_y, viewport.ancho, viewport.alto );
-   viewport.matrizVpInv = MAT_Viewport_inv( viewport.org_x, viewport.org_y, viewport.ancho, viewport.alto );
+   viewport = Viewport(0, 0, vp_ancho, vp_alto);
+   glViewport( viewport.org_x, viewport.org_y, viewport.ancho, viewport.alto );
 
-   camaras[camaraActiva]->ratio_yx_vp =  vp_alto * 1.0 / vp_ancho;
+   camaras[camaraActiva]->ratio_yx_vp =  viewport.ratio_yx;
    camaras[camaraActiva]->calcularViewfrustum();
 }
 // ---------------------------------------------------------------------

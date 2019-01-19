@@ -53,7 +53,7 @@ void CamaraInteractiva::calcularViewfrustum(  )
       // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
       // caso perspectiva: usar hfov_grad, n, ratio_yx_vp, dist, función MAT_Frustum
       // .....
-      vf = ViewFrustum(hfov_grad, ratio_yx_vp, n, dist + distAumentada);
+      vf = ViewFrustum(hfov_grad, 1.0 / ratio_yx_vp, n, dist + distAumentada);
 
    }
    else
@@ -66,7 +66,7 @@ void CamaraInteractiva::calcularViewfrustum(  )
       vf.far = dist + distAumentada;
       vf.top = dist;
       vf.bottom = -vf.top;
-      vf.right = dist * ratio_yx_vp;
+      vf.right = dist * 1.0 / ratio_yx_vp;
       vf.left = -vf.right;
       vf.matrizProy = MAT_Ortografica( vf.left, vf.right, vf.bottom, vf.top, vf.near, vf.far );
 
@@ -160,7 +160,7 @@ void CamaraInteractiva::moverHV( float nh, float nv )
 // desplazar en el eje Z de la cámara (hacia adelante o hacia detrás)
 
 constexpr float dmin = 2.0*n,  // distancia minima (2*near)
-                porc = 1 ; // porcentaje de cambio (1%)
+                porc = 2 ; // porcentaje de cambio (1%)
 
 void CamaraInteractiva::desplaZ( float nz )
 {
