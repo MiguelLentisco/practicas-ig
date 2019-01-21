@@ -551,7 +551,7 @@ MaterialTapasLata::MaterialTapasLata()
 
 
 MaterialPeonMadera::MaterialPeonMadera() :
- Material(new TexturaXY("../imgs/text-madera.jpg"), 0.5, 0.75, 0.5, 1.0  )
+ Material(new TexturaXY("../imgs/text-madera.jpg"), 0.5, 0.75, 0.5, 5.0  )
 {
 }
 
